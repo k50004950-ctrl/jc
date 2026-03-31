@@ -103,6 +103,56 @@ function adminLogout() {
     window.location.href = '/';
 }
 
+/* ---------- Google Login (Admin) ---------- */
+var _adminGoogleClientId = null;
+
+async function handleAdminGoogleLogin() {
+    if (!_adminGoogleClientId) {
+        try {
+            var res = await AdminAPI.get('/api/auth/google-client-id');
+            _adminGoogleClientId = res.clientId;
+        } catch (_) {}
+        if (!_adminGoogleClientId) {
+            document.getElementById('login-error').textContent = 'Google 로그인이 설정되지 않았습니다.';
+            return;
+        }
+    }
+    google.accounts.id.initialize({
+        client_id: _adminGoogleClientId,
+        callback: onAdminGoogleResponse
+    });
+    google.accounts.id.prompt(function(n) {
+        if (n.isNotDisplayed() || n.isSkippedMoment()) {
+            google.accounts.id.renderButton(document.getElementById('admin-google-btn'), { theme: 'outline', size: 'large' });
+            var gBtn = document.querySelector('#admin-google-btn div[role="button"]');
+            if (gBtn) gBtn.click();
+        }
+    });
+}
+
+async function onAdminGoogleResponse(response) {
+    var errEl = document.getElementById('login-error');
+    errEl.textContent = '';
+    try {
+        var res = await AdminAPI.post('/api/auth/google', { credential: response.credential });
+        if (res.success) {
+            if (!['admin', 'super_admin'].includes(res.user.role)) {
+                errEl.textContent = '관리자 권한이 없는 계정입니다.';
+                return;
+            }
+            AdminAPI.setToken(res.token);
+            AdminAPI.setUser(res.user);
+            localStorage.setItem('auth_token', res.token);
+            localStorage.setItem('user_info', JSON.stringify(res.user));
+            enterApp();
+        } else {
+            errEl.textContent = res.message || 'Google 로그인 실패';
+        }
+    } catch (err) {
+        errEl.textContent = 'Google 로그인 중 오류 발생';
+    }
+}
+
 function showLogin() {
     document.getElementById('login-page').style.display = '';
     document.getElementById('main-layout').style.display = 'none';

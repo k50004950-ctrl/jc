@@ -247,6 +247,91 @@ function requireAuth() {
     return true;
 }
 
+// ========== Google 로그인 ==========
+
+var _googleClientId = null;
+
+async function initGoogleLogin() {
+    // 서버에서 Google Client ID 가져오기
+    try {
+        var res = await fetch('/api/auth/google-client-id');
+        var data = await res.json();
+        if (data.clientId) {
+            _googleClientId = data.clientId;
+            console.log('Google Login initialized');
+        }
+    } catch (_) {
+        console.log('Google Login not configured');
+    }
+}
+
+async function handleGoogleLogin() {
+    if (!_googleClientId) {
+        // Client ID 미설정 시 재시도
+        await initGoogleLogin();
+        if (!_googleClientId) {
+            var errEl = document.getElementById('inline-error');
+            if (errEl) { errEl.textContent = 'Google 로그인이 아직 설정되지 않았습니다.'; errEl.classList.add('show'); }
+            return;
+        }
+    }
+
+    // Google One Tap / popup 방식
+    google.accounts.id.initialize({
+        client_id: _googleClientId,
+        callback: onGoogleCredentialResponse
+    });
+    google.accounts.id.prompt(function(notification) {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            // One Tap 안 되면 팝업으로 fallback
+            google.accounts.id.renderButton(
+                document.getElementById('google-login-btn'),
+                { theme: 'outline', size: 'large', text: 'signin_with', width: '100%' }
+            );
+            // 버튼 자동 클릭
+            var gBtn = document.querySelector('#google-login-btn div[role="button"]');
+            if (gBtn) gBtn.click();
+        }
+    });
+}
+
+async function onGoogleCredentialResponse(response) {
+    var errEl = document.getElementById('inline-error');
+    if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); }
+
+    var loginBtn = document.getElementById('google-login-btn');
+    if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = '로그인 중...'; }
+
+    try {
+        var result = await fetch('/api/auth/google', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ credential: response.credential })
+        });
+        var data = await result.json();
+
+        if (data.success) {
+            // 로그인 성공
+            apiClient.setToken(data.token);
+            currentUser = data.user;
+            localStorage.setItem('auth_token', data.token);
+            localStorage.setItem('user_info', JSON.stringify(data.user));
+
+            if (['super_admin'].includes(data.user.role)) {
+                localStorage.setItem('admin_token', data.token);
+            }
+
+            navigateToScreen('home');
+        } else {
+            if (errEl) { errEl.textContent = data.message || 'Google 로그인 실패'; errEl.classList.add('show'); }
+        }
+    } catch (err) {
+        if (errEl) { errEl.textContent = 'Google 로그인 중 오류가 발생했습니다.'; errEl.classList.add('show'); }
+    } finally {
+        if (loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google로 로그인'; }
+    }
+}
+
 // 페이지 로드 시 이벤트 리스너 등록
 document.addEventListener('DOMContentLoaded', () => {
     // 로그인 폼
@@ -254,6 +339,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
+
+    // Google 로그인 초기화
+    initGoogleLogin();
 
     // 비밀번호 토글 (signup-link, logout-btn은 navigation.js의 setupSignupEvents에서 등록)
     document.querySelectorAll('.toggle-password').forEach(button => {

@@ -281,6 +281,116 @@ router.post('/login', async (req, res) => {
 });
 
 /**
+ * POST /api/auth/google
+ * Google 로그인 (ID Token 검증)
+ */
+router.post('/google', async (req, res) => {
+    try {
+        const { credential } = req.body;
+        if (!credential) {
+            return res.status(400).json({ success: false, message: 'Google 인증 정보가 없습니다.' });
+        }
+
+        // Google ID Token 검증 (google-auth-library 없이 직접 검증)
+        const https = require('https');
+        const tokenInfo = await new Promise((resolve, reject) => {
+            https.get('https://oauth2.googleapis.com/tokeninfo?id_token=' + credential, (response) => {
+                let data = '';
+                response.on('data', chunk => data += chunk);
+                response.on('end', () => {
+                    try { resolve(JSON.parse(data)); }
+                    catch (e) { reject(new Error('Google 토큰 검증 실패')); }
+                });
+            }).on('error', reject);
+        });
+
+        // 토큰 유효성 확인
+        if (tokenInfo.error_description || !tokenInfo.email) {
+            return res.status(401).json({ success: false, message: 'Google 인증이 유효하지 않습니다.' });
+        }
+
+        // Client ID 검증 (환경변수 설정된 경우)
+        const clientId = process.env.GOOGLE_CLIENT_ID;
+        if (clientId && tokenInfo.aud !== clientId) {
+            return res.status(401).json({ success: false, message: 'Google Client ID가 일치하지 않습니다.' });
+        }
+
+        const googleEmail = tokenInfo.email.toLowerCase();
+        const googleName = tokenInfo.name || googleEmail.split('@')[0];
+        const googlePicture = tokenInfo.picture || null;
+
+        // 기존 회원 조회
+        const result = await query(
+            `SELECT u.id, u.email, u.name, u.role, u.status, u.profile_image, u.org_id,
+                    o.name as org_name
+             FROM users u
+             LEFT JOIN organizations o ON o.id = u.org_id
+             WHERE u.email = $1`,
+            [googleEmail]
+        );
+
+        if (result.rows.length === 0) {
+            // 미가입 — 이메일 전달해서 회원가입 유도
+            return res.status(404).json({
+                success: false,
+                message: '등록되지 않은 이메일입니다. 먼저 회원가입을 해주세요.',
+                google_email: googleEmail,
+                google_name: googleName
+            });
+        }
+
+        const user = result.rows[0];
+
+        // 상태 확인
+        if (user.status === 'pending') {
+            return res.status(403).json({ success: false, message: '승인 대기 중입니다.', status: 'pending' });
+        }
+        if (user.status === 'suspended') {
+            return res.status(403).json({ success: false, message: '정지된 계정입니다.', status: 'suspended' });
+        }
+        if (user.status === 'withdrawn') {
+            return res.status(403).json({ success: false, message: '탈퇴한 계정입니다.', status: 'withdrawn' });
+        }
+
+        // 프로필 이미지 업데이트 (없는 경우 Google 사진 사용)
+        if (!user.profile_image && googlePicture) {
+            await query('UPDATE users SET profile_image = $1 WHERE id = $2', [googlePicture, user.id]);
+        }
+
+        // JWT 발급
+        const token = generateToken(user.id, user.email, user.role);
+
+        res.json({
+            success: true,
+            token,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                status: user.status,
+                profile_image: user.profile_image || googlePicture,
+                org_id: user.org_id,
+                org_name: user.org_name || null,
+                can_post_notice: ['super_admin', 'admin'].includes(user.role || '')
+            }
+        });
+    } catch (error) {
+        console.error('Google login error:', error);
+        res.status(500).json({ success: false, message: 'Google 로그인 처리 중 오류가 발생했습니다.' });
+    }
+});
+
+/**
+ * GET /api/auth/google-client-id
+ * 프론트에서 Google Client ID 가져가기 (공개 API)
+ */
+router.get('/google-client-id', (req, res) => {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    res.json({ clientId: clientId || null });
+});
+
+/**
  * GET /api/auth/me
  * 현재 사용자 정보 조회
  */
