@@ -242,7 +242,12 @@ function navigateToScreen(screenName, opts) {
 
         // pushState (뒤로가기/popstate 시에는 push 안 함 — 무한루프 방지)
         if (!route.noHistory && !isBack && !window._navPopstate) {
-            pushRoute(screenName);
+            if (isTabSwitch) {
+                // 탭 전환은 replaceState — 히스토리 쌓지 않음 (무한 뒤로가기 방지)
+                history.replaceState({ screen: screenName }, '', '#' + screenName);
+            } else {
+                pushRoute(screenName);
+            }
         }
     } else {
         console.error('Screen not found:', screenName);
