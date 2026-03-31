@@ -274,6 +274,8 @@ html {
     flex: 1;
     overflow-y: auto;
     padding: 12px;
+    /* 하단 네비바 가림 방지 — 모든 화면에 일괄 적용 */
+    padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ==================== 스플래시 화면 ==================== */
@@ -1125,8 +1127,18 @@ input::-ms-clear {
 }
 
 /* ==================== 하단 네비게이션이 있는 화면 ==================== */
+/* with-bottom-nav — 하위호환 유지 (기본 .screen-content에서 이미 처리) */
 .screen-content.with-bottom-nav {
-    padding-bottom: 62px;
+    padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+}
+
+/* 로그인/가입 등 하단 네비 없는 화면 — 패딩 제거 */
+#login-screen .screen-content,
+#signup-screen .screen-content,
+#forgot-password-screen .screen-content,
+#pending-approval-screen .screen-content,
+#splash-screen .screen-content {
+    padding-bottom: 12px;
 }
 
 /* ==================== 배너 섹션 ==================== */
