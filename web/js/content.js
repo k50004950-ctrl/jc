@@ -26,6 +26,11 @@ async function loadContentScreen(screenName) {
         return;
     }
 
+    // JCI 비전·미션·강령·신조는 index.html에 하드코딩 — 추가 로드 불필요
+    if (screenName === 'jc-vision') {
+        return;
+    }
+
     // 동적 화면 컨테이너 확보
     var screen = document.getElementById('content-screen');
     if (!screen) {
@@ -59,12 +64,6 @@ async function loadContentScreen(screenName) {
 
     // history
     if (typeof pushRoute === 'function') pushRoute(screenName);
-
-    // JCI 비전·미션·강령·신조는 모든 로컬 공통 — 하드코딩
-    if (screenName === 'jc-vision') {
-        renderJciVisionScreen(screen);
-        return;
-    }
 
     // 사용자 정보
     var user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
