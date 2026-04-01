@@ -1412,10 +1412,104 @@
         <div id="jc-vision-screen" class="screen">
             <div class="app-bar">
                 <button class="back-button" onclick="history.back()" aria-label="뒤로 가기"><span class="icon">←</span></button>
-                <h1 class="app-bar-title">JC 비전·목표</h1>
+                <h1 class="app-bar-title">JCI 비전·미션·강령·신조</h1>
             </div>
-            <div class="screen-content with-bottom-nav" id="jc-vision-content">
-                <div class="content-placeholder">관리자가 비전, JC 음악, 목표를 업로드하면 여기에 표시됩니다.</div>
+            <div class="screen-content with-bottom-nav" id="jc-vision-content" style="padding:16px;">
+                <!-- JCI 미션 -->
+                <div style="margin-bottom:24px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                        <div style="width:4px;height:20px;background:#2563EB;border-radius:2px;"></div>
+                        <h2 style="font-size:17px;font-weight:700;color:var(--text-primary);margin:0;">JCI 미션</h2>
+                    </div>
+                    <div style="background:var(--bg-secondary);border-radius:12px;padding:16px;border:1px solid var(--border-color);">
+                        <p style="font-size:14px;line-height:1.7;color:var(--text-primary);margin:0;">청년들에게 긍정적인 변화를 만들 수 있는 <strong>리더십 개발의 기회</strong>를 제공한다.</p>
+                    </div>
+                </div>
+                <!-- JCI 비전 -->
+                <div style="margin-bottom:24px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                        <div style="width:4px;height:20px;background:#2563EB;border-radius:2px;"></div>
+                        <h2 style="font-size:17px;font-weight:700;color:var(--text-primary);margin:0;">JCI 비전</h2>
+                    </div>
+                    <div style="background:var(--bg-secondary);border-radius:12px;padding:16px;border:1px solid var(--border-color);">
+                        <p style="font-size:14px;line-height:1.7;color:var(--text-primary);margin:0;">청년 리더들의 <strong>선도적인 글로벌 네트워크</strong>를 구축한다.</p>
+                    </div>
+                </div>
+                <!-- JCI 4대 이념 -->
+                <div style="margin-bottom:24px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                        <div style="width:4px;height:20px;background:#2563EB;border-radius:2px;"></div>
+                        <h2 style="font-size:17px;font-weight:700;color:var(--text-primary);margin:0;">JCI 4대 이념</h2>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div style="background:var(--bg-secondary);border-radius:12px;padding:14px;border:1px solid var(--border-color);text-align:center;">
+                            <div style="font-size:24px;margin-bottom:6px;">🎯</div>
+                            <p style="font-size:14px;font-weight:600;color:var(--text-primary);margin:0;">지도력 배양</p>
+                            <p style="font-size:12px;color:var(--text-hint);margin:4px 0 0;">Leadership</p>
+                        </div>
+                        <div style="background:var(--bg-secondary);border-radius:12px;padding:14px;border:1px solid var(--border-color);text-align:center;">
+                            <div style="font-size:24px;margin-bottom:6px;">🏘️</div>
+                            <p style="font-size:14px;font-weight:600;color:var(--text-primary);margin:0;">지역사회 개발</p>
+                            <p style="font-size:12px;color:var(--text-hint);margin:4px 0 0;">Community</p>
+                        </div>
+                        <div style="background:var(--bg-secondary);border-radius:12px;padding:14px;border:1px solid var(--border-color);text-align:center;">
+                            <div style="font-size:24px;margin-bottom:6px;">🤝</div>
+                            <p style="font-size:14px;font-weight:600;color:var(--text-primary);margin:0;">국제친선 도모</p>
+                            <p style="font-size:12px;color:var(--text-hint);margin:4px 0 0;">International</p>
+                        </div>
+                        <div style="background:var(--bg-secondary);border-radius:12px;padding:14px;border:1px solid var(--border-color);text-align:center;">
+                            <div style="font-size:24px;margin-bottom:6px;">💼</div>
+                            <p style="font-size:14px;font-weight:600;color:var(--text-primary);margin:0;">사업기회 개발</p>
+                            <p style="font-size:12px;color:var(--text-hint);margin:4px 0 0;">Business</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- 한국JC 강령 -->
+                <div style="margin-bottom:24px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                        <div style="width:4px;height:20px;background:#F59E0B;border-radius:2px;"></div>
+                        <h2 style="font-size:17px;font-weight:700;color:var(--text-primary);margin:0;">한국JC 강령</h2>
+                    </div>
+                    <div style="background:linear-gradient(135deg, #FEF3C7, #FFFBEB);border-radius:12px;padding:16px;border:1px solid #FCD34D;">
+                        <p style="font-size:14px;line-height:1.8;color:#92400E;margin:0;">우리는 시대적·사회적 사명을 자각하고, JC 본연의 이념을 같이하는 청년들의 웅지와 정열을 한데 모아, <strong>자주적·자립적·자발적 실천력</strong>으로 <strong>복지사회 건설</strong>과 <strong>세계평화</strong>를 이룩하는 데 총력을 다한다.</p>
+                    </div>
+                </div>
+                <!-- JCI 신조 -->
+                <div style="margin-bottom:24px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                        <div style="width:4px;height:20px;background:#2563EB;border-radius:2px;"></div>
+                        <h2 style="font-size:17px;font-weight:700;color:var(--text-primary);margin:0;">JCI 신조 (Creed)</h2>
+                    </div>
+                    <div style="background:var(--bg-secondary);border-radius:12px;padding:16px;border:1px solid var(--border-color);">
+                        <p style="font-size:14px;line-height:1.8;color:var(--text-primary);margin:0 0 12px;font-weight:600;">우리는 믿는다.</p>
+                        <div style="display:flex;flex-direction:column;gap:10px;">
+                            <div style="display:flex;gap:10px;align-items:flex-start;">
+                                <span style="flex-shrink:0;width:24px;height:24px;background:#2563EB;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px;">1</span>
+                                <p style="font-size:14px;line-height:1.7;color:var(--text-primary);margin:0;"><strong>신앙</strong>은 인간생활에 의의와 목적을 부여하며</p>
+                            </div>
+                            <div style="display:flex;gap:10px;align-items:flex-start;">
+                                <span style="flex-shrink:0;width:24px;height:24px;background:#2563EB;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px;">2</span>
+                                <p style="font-size:14px;line-height:1.7;color:var(--text-primary);margin:0;"><strong>인류</strong>는 국경을 초월하여 형제가 될 수 있으며</p>
+                            </div>
+                            <div style="display:flex;gap:10px;align-items:flex-start;">
+                                <span style="flex-shrink:0;width:24px;height:24px;background:#2563EB;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px;">3</span>
+                                <p style="font-size:14px;line-height:1.7;color:var(--text-primary);margin:0;"><strong>경제적 정의</strong>는 자유기업을 통해 자유인에 의하여 최선으로 달성되며</p>
+                            </div>
+                            <div style="display:flex;gap:10px;align-items:flex-start;">
+                                <span style="flex-shrink:0;width:24px;height:24px;background:#2563EB;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px;">4</span>
+                                <p style="font-size:14px;line-height:1.7;color:var(--text-primary);margin:0;"><strong>정치</strong>는 법률에 기반을 두며 인간의 자의로 행해질 수 없으며</p>
+                            </div>
+                            <div style="display:flex;gap:10px;align-items:flex-start;">
+                                <span style="flex-shrink:0;width:24px;height:24px;background:#2563EB;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px;">5</span>
+                                <p style="font-size:14px;line-height:1.7;color:var(--text-primary);margin:0;">이 지구상의 가장 위대한 보배가 <strong>인간의 개성</strong> 속에 있으며</p>
+                            </div>
+                            <div style="display:flex;gap:10px;align-items:flex-start;">
+                                <span style="flex-shrink:0;width:24px;height:24px;background:#2563EB;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px;">6</span>
+                                <p style="font-size:14px;line-height:1.7;color:var(--text-primary);margin:0;"><strong>인류에의 봉사</strong>가 인생의 가장 아름다운 사업임을</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="jc-roles-screen" class="screen">
