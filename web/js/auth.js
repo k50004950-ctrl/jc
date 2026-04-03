@@ -592,14 +592,12 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.addEventListener('submit', handleLogin);
     }
 
-    // Google 로그인 초기화
-    initGoogleLogin();
-
-    // Apple 로그인 초기화
-    initAppleLogin();
-
-    // Apple 콜백 확인
-    checkAppleCallback();
+    // 로그인 안 된 상태에서만 소셜 로그인 초기화
+    if (!localStorage.getItem('auth_token')) {
+        initGoogleLogin();
+        initAppleLogin();
+        checkAppleCallback();
+    }
 
     // 비밀번호 토글 (signup-link, logout-btn은 navigation.js의 setupSignupEvents에서 등록)
     document.querySelectorAll('.toggle-password').forEach(button => {
