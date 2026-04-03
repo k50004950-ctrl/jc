@@ -36,3 +36,10 @@ node_modules/
 # Agent logs (contains DB credentials and sensitive info)
 Docs/agent-logs/
 image/mov/
+
+# iOS build artifacts
+ios/App/App/public/
+ios/App/Pods/
+ios/DerivedData/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/

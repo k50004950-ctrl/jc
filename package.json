@@ -1,0 +1,25 @@
+{
+  "name": "jc",
+  "version": "1.0.0",
+  "description": "본 프로젝트의 모든 작업 규칙은 [Docs/contributing.md](Docs/contributing.md)를 따른다.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/k50004950-ctrl/jc.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/k50004950-ctrl/jc/issues"
+  },
+  "homepage": "https://github.com/k50004950-ctrl/jc#readme",
+  "dependencies": {
+    "@capacitor/cli": "^8.3.0",
+    "@capacitor/core": "^8.3.0",
+    "@capacitor/ios": "^8.3.0"
+  }
+}

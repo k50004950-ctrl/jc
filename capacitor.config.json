@@ -1,0 +1,14 @@
+{
+  "appId": "com.ydpjc.app",
+  "appName": "영등포 JC",
+  "webDir": "web",
+  "server": {
+    "url": "https://jc-production-7db6.up.railway.app",
+    "cleartext": false
+  },
+  "ios": {
+    "contentInset": "always",
+    "allowsLinkPreview": false,
+    "scheme": "영등포JC"
+  }
+}
