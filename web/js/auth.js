@@ -464,10 +464,50 @@ function goToSignupWithSocial(email, name) {
         var nameEl = document.getElementById('signup-name');
         if (emailEl && email) { emailEl.value = email; emailEl.readOnly = true; emailEl.style.background = '#F3F4F6'; }
         if (nameEl && name) nameEl.value = name;
-        // 이메일 자동입력 안내
+        hideSocialPasswordFields();
         var emailErr = document.getElementById('signup-email-error');
         if (emailErr) { emailErr.textContent = '소셜 계정 이메일이 자동입력되었습니다.'; emailErr.style.color = 'var(--primary-color)'; emailErr.style.display = 'block'; }
     }, 200);
+}
+
+/**
+ * 소셜 가입 시 비밀번호 필드 숨기기 + required 해제
+ */
+function hideSocialPasswordFields() {
+    window._socialSignup = true;
+    var pwEl = document.getElementById('signup-password');
+    var pwConfEl = document.getElementById('signup-password-confirm');
+    // 비밀번호 필드의 부모 form-group을 찾아서 숨김
+    if (pwEl) {
+        pwEl.required = false;
+        pwEl.closest('.form-group').style.display = 'none';
+        // 비밀번호 강도 미터도 숨김
+        var strengthEl = document.getElementById('password-strength');
+        if (strengthEl) strengthEl.style.display = 'none';
+    }
+    if (pwConfEl) {
+        pwConfEl.required = false;
+        pwConfEl.closest('.form-group').style.display = 'none';
+    }
+}
+
+/**
+ * 소셜 가입 해제 (직접 입력으로 전환 시)
+ */
+function showPasswordFields() {
+    window._socialSignup = false;
+    var pwEl = document.getElementById('signup-password');
+    var pwConfEl = document.getElementById('signup-password-confirm');
+    if (pwEl) {
+        pwEl.required = true;
+        pwEl.closest('.form-group').style.display = '';
+        var strengthEl = document.getElementById('password-strength');
+        if (strengthEl) strengthEl.style.display = '';
+    }
+    if (pwConfEl) {
+        pwConfEl.required = true;
+        pwConfEl.closest('.form-group').style.display = '';
+    }
 }
 
 /**
@@ -490,6 +530,7 @@ async function socialSignupFill(provider) {
                     var nameEl = document.getElementById('signup-name');
                     if (emailEl && payload.email) { emailEl.value = payload.email.toLowerCase(); emailEl.readOnly = true; emailEl.style.background = '#F3F4F6'; }
                     if (nameEl && payload.name) nameEl.value = payload.name;
+                    hideSocialPasswordFields();
                     var emailErr = document.getElementById('signup-email-error');
                     if (emailErr) { emailErr.textContent = 'Google 이메일이 입력되었습니다.'; emailErr.style.color = 'var(--primary-color)'; emailErr.style.display = 'block'; }
                 } catch (e) { console.error('Google token parse error:', e); }
@@ -531,6 +572,7 @@ async function socialSignupFill(provider) {
                 if (nameEl && response.user && response.user.name) {
                     nameEl.value = ((response.user.name.lastName || '') + (response.user.name.firstName || '')).trim();
                 }
+                hideSocialPasswordFields();
                 var emailErr = document.getElementById('signup-email-error');
                 if (emailErr) { emailErr.textContent = 'Apple 이메일이 입력되었습니다.'; emailErr.style.color = 'var(--primary-color)'; emailErr.style.display = 'block'; }
             }

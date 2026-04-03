@@ -151,30 +151,32 @@ function validateSignupForm() {
         if (!firstErrorField) firstErrorField = emailEl;
     }
 
-    // 비밀번호 검증
-    const passwordEl = document.getElementById('signup-password');
-    const password = passwordEl.value;
-    if (!password) {
-        showError('signup-password-error', '비밀번호를 입력하세요.');
-        isValid = false;
-        if (!firstErrorField) firstErrorField = passwordEl;
-    } else if (password.length < 8) {
-        showError('signup-password-error', '비밀번호는 8자 이상이어야 합니다.');
-        isValid = false;
-        if (!firstErrorField) firstErrorField = passwordEl;
-    }
+    // 비밀번호 검증 (소셜 가입 시 스킵)
+    if (!window._socialSignup) {
+        const passwordEl = document.getElementById('signup-password');
+        const password = passwordEl.value;
+        if (!password) {
+            showError('signup-password-error', '비밀번호를 입력하세요.');
+            isValid = false;
+            if (!firstErrorField) firstErrorField = passwordEl;
+        } else if (password.length < 8) {
+            showError('signup-password-error', '비밀번호는 8자 이상이어야 합니다.');
+            isValid = false;
+            if (!firstErrorField) firstErrorField = passwordEl;
+        }
 
-    // 비밀번호 확인 검증
-    const passwordConfirmEl = document.getElementById('signup-password-confirm');
-    const passwordConfirm = passwordConfirmEl.value;
-    if (!passwordConfirm) {
-        showError('signup-password-confirm-error', '비밀번호 확인을 입력하세요.');
-        isValid = false;
-        if (!firstErrorField) firstErrorField = passwordConfirmEl;
-    } else if (password !== passwordConfirm) {
-        showError('signup-password-confirm-error', '비밀번호가 일치하지 않습니다.');
-        isValid = false;
-        if (!firstErrorField) firstErrorField = passwordConfirmEl;
+        // 비밀번호 확인 검증
+        const passwordConfirmEl = document.getElementById('signup-password-confirm');
+        const passwordConfirm = passwordConfirmEl.value;
+        if (!passwordConfirm) {
+            showError('signup-password-confirm-error', '비밀번호 확인을 입력하세요.');
+            isValid = false;
+            if (!firstErrorField) firstErrorField = passwordConfirmEl;
+        } else if (password !== passwordConfirm) {
+            showError('signup-password-confirm-error', '비밀번호가 일치하지 않습니다.');
+            isValid = false;
+            if (!firstErrorField) firstErrorField = passwordConfirmEl;
+        }
     }
 
     // 이름 검증
@@ -455,9 +457,11 @@ async function handleSignup(event) {
         const userData = {
             // 소속 로컬
             org_id: org_id ? parseInt(org_id) : undefined,
+            // 소셜 가입 여부
+            social_signup: window._socialSignup === true,
             // Step 1
             email,
-            password,
+            password: window._socialSignup ? undefined : password,
             // Step 2
             name,
             ssnFront,

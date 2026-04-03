@@ -27,11 +27,22 @@ router.post('/signup', async (req, res) => {
             emergency_relationship, special_notes
         } = req.body;
 
+        // 소셜 가입 여부 (비밀번호 없이 가입)
+        const isSocialSignup = req.body.social_signup === true;
+
         // 유효성 검증
-        if (!email || !password || !name || !phone || !address) {
+        if (!email || !name || !phone || !address) {
             return res.status(400).json({
                 success: false,
                 message: '필수 항목을 모두 입력해주세요.'
+            });
+        }
+
+        // 일반 가입 시 비밀번호 필수
+        if (!isSocialSignup && !password) {
+            return res.status(400).json({
+                success: false,
+                message: '비밀번호를 입력해주세요.'
             });
         }
 
@@ -44,8 +55,8 @@ router.post('/signup', async (req, res) => {
             });
         }
 
-        // 비밀번호 길이 검증 (최소 8자)
-        if (password.length < 8) {
+        // 비밀번호 길이 검증 (일반 가입 시만)
+        if (!isSocialSignup && password.length < 8) {
             return res.status(400).json({
                 success: false,
                 message: '비밀번호는 8자 이상이어야 합니다.'
@@ -65,8 +76,11 @@ router.post('/signup', async (req, res) => {
             });
         }
 
-        // 비밀번호 해싱
-        const passwordHash = await hashPassword(password);
+        // 비밀번호 해싱 (소셜 가입 시 랜덤 비밀번호 생성)
+        const actualPassword = isSocialSignup
+            ? require('crypto').randomBytes(32).toString('hex')
+            : password;
+        const passwordHash = await hashPassword(actualPassword);
         
         // 학력/경력/가족 정보를 JSONB 배열로 변환
         const educations = education ? JSON.stringify(education.split('\n').filter(e => e.trim()).map(e => ({ description: e.trim() }))) : '[]';
