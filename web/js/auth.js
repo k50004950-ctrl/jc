@@ -322,6 +322,9 @@ async function onGoogleCredentialResponse(response) {
             }
 
             navigateToScreen('home');
+        } else if (result.status === 404 && data.google_email) {
+            // 미가입 → 회원가입 화면으로 이동 + 이메일/이름 자동입력
+            goToSignupWithSocial(data.google_email, data.google_name || '');
         } else {
             if (errEl) { errEl.textContent = data.message || 'Google 로그인 실패'; errEl.classList.add('show'); }
         }
@@ -415,6 +418,9 @@ async function onAppleLoginResponse(response) {
             }
 
             navigateToScreen('home');
+        } else if (result.status === 404 && data.apple_email) {
+            // 미가입 → 회원가입 화면으로 이동 + 이메일/이름 자동입력
+            goToSignupWithSocial(data.apple_email, data.apple_name || '');
         } else {
             if (errEl) { errEl.textContent = data.message || 'Apple 로그인 실패'; errEl.classList.add('show'); }
         }
@@ -443,6 +449,96 @@ function checkAppleCallback() {
             authorization: { id_token: appleIdToken },
             user: userData
         });
+    }
+}
+
+// ========== 소셜 회원가입 (이메일/이름 자동입력) ==========
+
+/**
+ * 로그인 시 미가입 → 회원가입 화면으로 이동 + 이메일/이름 자동입력
+ */
+function goToSignupWithSocial(email, name) {
+    navigateToScreen('signup');
+    setTimeout(function() {
+        var emailEl = document.getElementById('signup-email');
+        var nameEl = document.getElementById('signup-name');
+        if (emailEl && email) { emailEl.value = email; emailEl.readOnly = true; emailEl.style.background = '#F3F4F6'; }
+        if (nameEl && name) nameEl.value = name;
+        // 이메일 자동입력 안내
+        var emailErr = document.getElementById('signup-email-error');
+        if (emailErr) { emailErr.textContent = '소셜 계정 이메일이 자동입력되었습니다.'; emailErr.style.color = 'var(--primary-color)'; emailErr.style.display = 'block'; }
+    }, 200);
+}
+
+/**
+ * 회원가입 폼에서 소셜 버튼으로 이메일/이름 자동입력
+ */
+async function socialSignupFill(provider) {
+    if (provider === 'google') {
+        if (!_googleClientId) {
+            await initGoogleLogin();
+            if (!_googleClientId) { alert('Google 로그인이 설정되지 않았습니다.'); return; }
+        }
+        google.accounts.id.initialize({
+            client_id: _googleClientId,
+            callback: function(response) {
+                // Google ID Token에서 이메일/이름 추출
+                try {
+                    var parts = response.credential.split('.');
+                    var payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+                    var emailEl = document.getElementById('signup-email');
+                    var nameEl = document.getElementById('signup-name');
+                    if (emailEl && payload.email) { emailEl.value = payload.email.toLowerCase(); emailEl.readOnly = true; emailEl.style.background = '#F3F4F6'; }
+                    if (nameEl && payload.name) nameEl.value = payload.name;
+                    var emailErr = document.getElementById('signup-email-error');
+                    if (emailErr) { emailErr.textContent = 'Google 이메일이 입력되었습니다.'; emailErr.style.color = 'var(--primary-color)'; emailErr.style.display = 'block'; }
+                } catch (e) { console.error('Google token parse error:', e); }
+            }
+        });
+        google.accounts.id.prompt(function(notification) {
+            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                // fallback: 팝업 버튼 렌더
+                var tempDiv = document.createElement('div');
+                tempDiv.id = 'google-signup-temp';
+                tempDiv.style.cssText = 'position:fixed;top:-9999px;';
+                document.body.appendChild(tempDiv);
+                google.accounts.id.renderButton(tempDiv, { theme: 'outline', size: 'large' });
+                var gBtn = tempDiv.querySelector('div[role="button"]');
+                if (gBtn) gBtn.click();
+                setTimeout(function() { if (tempDiv.parentNode) tempDiv.parentNode.removeChild(tempDiv); }, 5000);
+            }
+        });
+    } else if (provider === 'apple') {
+        if (!_appleClientId) {
+            await initAppleLogin();
+            if (!_appleClientId) { alert('Apple 로그인이 설정되지 않았습니다.'); return; }
+        }
+        try {
+            AppleID.auth.init({
+                clientId: _appleClientId,
+                scope: 'name email',
+                redirectURI: _appleRedirectUri,
+                usePopup: true
+            });
+            var response = await AppleID.auth.signIn();
+            var idToken = response.authorization && response.authorization.id_token;
+            if (idToken) {
+                var parts = idToken.split('.');
+                var payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+                var emailEl = document.getElementById('signup-email');
+                var nameEl = document.getElementById('signup-name');
+                if (emailEl && payload.email) { emailEl.value = payload.email.toLowerCase(); emailEl.readOnly = true; emailEl.style.background = '#F3F4F6'; }
+                if (nameEl && response.user && response.user.name) {
+                    nameEl.value = ((response.user.name.lastName || '') + (response.user.name.firstName || '')).trim();
+                }
+                var emailErr = document.getElementById('signup-email-error');
+                if (emailErr) { emailErr.textContent = 'Apple 이메일이 입력되었습니다.'; emailErr.style.color = 'var(--primary-color)'; emailErr.style.display = 'block'; }
+            }
+        } catch (error) {
+            if (error.error !== 'popup_closed_by_user' && error.error !== 'user_cancelled_authorize') {
+                console.error('Apple signup fill error:', error);
+            }
+        }
     }
 }
 
