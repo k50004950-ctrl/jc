@@ -1,6 +1,6 @@
 // 영등포 JC — Service Worker (Push Notifications + Offline Cache)
 
-var CACHE_NAME = 'jc-v10';
+var CACHE_NAME = 'jc-v11';
 var STATIC_ASSETS = [
   '/manifest.json'
 ];
@@ -40,12 +40,19 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 정적 리소스: 네트워크 우선 (캐시는 오프라인 폴백용)
+  // 정적 리소스: HTML/JS/CSS는 항상 네트워크 (캐시 안 함), 이미지만 캐시
   if (url.origin === self.location.origin) {
+    var isCodeFile = /\.(html|js|css)$/.test(url.pathname) || url.pathname === '/' || url.pathname === '';
+    if (isCodeFile) {
+      // HTML/JS/CSS → 항상 네트워크, 캐시 안 함
+      event.respondWith(fetch(event.request));
+      return;
+    }
+    // 이미지/폰트 등 → 네트워크 우선 + 캐시 폴백
     event.respondWith(
       fetch(event.request).then(response => {
         if (response.ok) {
-          const clone = response.clone();
+          var clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return response;
