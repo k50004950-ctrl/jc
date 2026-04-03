@@ -242,6 +242,13 @@ function showWithdrawScreen() {
     var container = document.getElementById('settings-screen-content');
     if (!container) return;
 
+    // 소셜 가입 회원인지 확인 (window._socialSignup 또는 로컬스토리지)
+    var isSocial = window._socialSignup === true;
+
+    var passwordField = isSocial
+        ? '<p style="font-size:13px;color:var(--text-hint);margin-bottom:12px;">소셜 계정(Google/Apple)으로 가입하셨으므로 비밀번호 확인 없이 탈퇴됩니다.</p>'
+        : '<div class="form-group"><label>비밀번호 확인</label><input type="password" id="withdraw-password" placeholder="현재 비밀번호를 입력하세요" style="width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--border-color);border-radius:8px;font-size:15px"></div>';
+
     container.innerHTML = ''
         + '<div style="padding:16px 0">'
         + '<button class="settings-back-btn" onclick="renderSettingsScreen()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> 돌아가기</button>'
@@ -253,7 +260,7 @@ function showWithdrawScreen() {
         + '&bull; 알림 설정 및 구독 정보'
         + '</div>'
         + '<div class="form-group"><label>탈퇴 사유 (선택)</label><textarea id="withdraw-reason" rows="3" style="width:100%;padding:10px 12px;border:1px solid var(--border-color);border-radius:8px;font-family:inherit;font-size:14px;resize:vertical" placeholder="탈퇴 사유를 입력해주세요"></textarea></div>'
-        + '<div class="form-group"><label>비밀번호 확인</label><input type="password" id="withdraw-password" placeholder="현재 비밀번호를 입력하세요" style="width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--border-color);border-radius:8px;font-size:15px"></div>'
+        + passwordField
         + '<div id="withdraw-error" class="inline-error-message"></div>'
         + '<button class="btn btn-danger" id="withdraw-submit-btn" onclick="handleWithdraw()" style="margin-top:8px">회원 탈퇴하기</button>'
         + '</div>';
@@ -261,23 +268,30 @@ function showWithdrawScreen() {
 
 // 회원 탈퇴 처리
 async function handleWithdraw() {
-    var password = (document.getElementById('withdraw-password')?.value || '').trim();
+    var isSocial = window._socialSignup === true;
+    var password = isSocial ? null : (document.getElementById('withdraw-password')?.value || '').trim();
     var reason = (document.getElementById('withdraw-reason')?.value || '').trim();
     var errorEl = document.getElementById('withdraw-error');
     var submitBtn = document.getElementById('withdraw-submit-btn');
 
-    if (!password) {
+    if (!isSocial && !password) {
         if (errorEl) { errorEl.textContent = '비밀번호를 입력해주세요.'; errorEl.classList.add('show'); }
         return;
     }
+
+    if (!confirm('정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
 
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '처리 중...'; }
     if (errorEl) { errorEl.textContent = ''; errorEl.classList.remove('show'); }
 
     try {
+        var body = { reason: reason };
+        if (isSocial) { body.social_withdraw = true; }
+        else { body.password = password; }
+
         var result = await apiClient.request('/auth/withdraw', {
             method: 'POST',
-            body: JSON.stringify({ password: password, reason: reason })
+            body: JSON.stringify(body)
         });
         if (result.success) {
             apiClient.clearToken();

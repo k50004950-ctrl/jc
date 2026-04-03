@@ -938,34 +938,37 @@ router.post('/find-email', async (req, res) => {
 router.post('/withdraw', authenticate, async (req, res) => {
     try {
         const userId = req.user.userId;
-        const { password, reason } = req.body;
+        const { password, reason, social_withdraw } = req.body;
 
-        if (!password) {
-            return res.status(400).json({
-                success: false,
-                message: '비밀번호를 입력해주세요.'
-            });
-        }
+        // 소셜 가입 회원은 비밀번호 검증 스킵 (비밀번호가 랜덤 생성됨)
+        if (!social_withdraw) {
+            if (!password) {
+                return res.status(400).json({
+                    success: false,
+                    message: '비밀번호를 입력해주세요.'
+                });
+            }
 
-        // 비밀번호 확인
-        const userResult = await query(
-            'SELECT password_hash FROM users WHERE id = $1',
-            [userId]
-        );
+            // 비밀번호 확인
+            const userResult = await query(
+                'SELECT password_hash FROM users WHERE id = $1',
+                [userId]
+            );
 
-        if (userResult.rows.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: '사용자를 찾을 수 없습니다.'
-            });
-        }
+            if (userResult.rows.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: '사용자를 찾을 수 없습니다.'
+                });
+            }
 
-        const valid = await comparePassword(password, userResult.rows[0].password_hash);
-        if (!valid) {
-            return res.status(401).json({
-                success: false,
-                message: '비밀번호가 일치하지 않습니다.'
-            });
+            const valid = await comparePassword(password, userResult.rows[0].password_hash);
+            if (!valid) {
+                return res.status(401).json({
+                    success: false,
+                    message: '비밀번호가 일치하지 않습니다.'
+                });
+            }
         }
 
         // soft delete: status 변경, withdrawn_at 설정
