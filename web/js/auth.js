@@ -332,6 +332,120 @@ async function onGoogleCredentialResponse(response) {
     }
 }
 
+// ========== Apple 로그인 ==========
+
+var _appleClientId = null;
+var _appleRedirectUri = null;
+
+async function initAppleLogin() {
+    try {
+        var res = await fetch('/api/auth/apple-client-id');
+        var data = await res.json();
+        if (data.clientId) {
+            _appleClientId = data.clientId;
+            _appleRedirectUri = data.redirectUri;
+            console.log('Apple Login initialized');
+        }
+    } catch (_) {
+        console.log('Apple Login not configured');
+    }
+}
+
+async function handleAppleLogin() {
+    if (!_appleClientId) {
+        await initAppleLogin();
+        if (!_appleClientId) {
+            var errEl = document.getElementById('inline-error');
+            if (errEl) { errEl.textContent = 'Apple 로그인이 아직 설정되지 않았습니다.'; errEl.classList.add('show'); }
+            return;
+        }
+    }
+
+    var errEl = document.getElementById('inline-error');
+    if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); }
+
+    try {
+        // Apple Sign In JS SDK 사용
+        AppleID.auth.init({
+            clientId: _appleClientId,
+            scope: 'name email',
+            redirectURI: _appleRedirectUri,
+            usePopup: true
+        });
+
+        var response = await AppleID.auth.signIn();
+        await onAppleLoginResponse(response);
+    } catch (error) {
+        // 사용자가 취소한 경우
+        if (error.error === 'popup_closed_by_user' || error.error === 'user_cancelled_authorize') {
+            return;
+        }
+        console.error('Apple login error:', error);
+        if (errEl) { errEl.textContent = 'Apple 로그인 중 오류가 발생했습니다.'; errEl.classList.add('show'); }
+    }
+}
+
+async function onAppleLoginResponse(response) {
+    var errEl = document.getElementById('inline-error');
+    var loginBtn = document.getElementById('apple-login-btn');
+    if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = '로그인 중...'; }
+
+    try {
+        var idToken = response.authorization && response.authorization.id_token;
+        if (!idToken) throw new Error('Apple 인증 토큰을 받지 못했습니다.');
+
+        var result = await fetch('/api/auth/apple', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id_token: idToken,
+                user: response.user || null
+            })
+        });
+        var data = await result.json();
+
+        if (data.success) {
+            apiClient.setToken(data.token);
+            currentUser = data.user;
+            localStorage.setItem('auth_token', data.token);
+            localStorage.setItem('user_info', JSON.stringify(data.user));
+
+            if (['super_admin'].includes(data.user.role)) {
+                localStorage.setItem('admin_token', data.token);
+            }
+
+            navigateToScreen('home');
+        } else {
+            if (errEl) { errEl.textContent = data.message || 'Apple 로그인 실패'; errEl.classList.add('show'); }
+        }
+    } catch (err) {
+        console.error('Apple login response error:', err);
+        if (errEl) { errEl.textContent = 'Apple 로그인 중 오류가 발생했습니다.'; errEl.classList.add('show'); }
+    } finally {
+        if (loginBtn) {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg> Apple로 로그인';
+        }
+    }
+}
+
+// Apple 콜백 리다이렉트 처리 (URL에 apple_id_token이 있는 경우)
+function checkAppleCallback() {
+    var params = new URLSearchParams(window.location.search);
+    var appleIdToken = params.get('apple_id_token');
+    if (appleIdToken) {
+        var appleUser = params.get('apple_user');
+        var userData = null;
+        try { if (appleUser) userData = JSON.parse(decodeURIComponent(appleUser)); } catch (_) {}
+        // URL 파라미터 제거
+        window.history.replaceState({}, '', window.location.pathname + '#login');
+        onAppleLoginResponse({
+            authorization: { id_token: appleIdToken },
+            user: userData
+        });
+    }
+}
+
 // 페이지 로드 시 이벤트 리스너 등록
 document.addEventListener('DOMContentLoaded', () => {
     // 로그인 폼
@@ -342,6 +456,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Google 로그인 초기화
     initGoogleLogin();
+
+    // Apple 로그인 초기화
+    initAppleLogin();
+
+    // Apple 콜백 확인
+    checkAppleCallback();
 
     // 비밀번호 토글 (signup-link, logout-btn은 navigation.js의 setupSignupEvents에서 등록)
     document.querySelectorAll('.toggle-password').forEach(button => {

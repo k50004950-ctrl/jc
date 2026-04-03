@@ -382,6 +382,138 @@ router.post('/google', async (req, res) => {
 });
 
 /**
+ * POST /api/auth/apple
+ * Apple 로그인 (Sign in with Apple)
+ * - Apple ID Token을 받아 검증 후 기존 회원이면 JWT 발급
+ * - 미가입 시 404 반환 (회원가입 유도)
+ */
+router.post('/apple', async (req, res) => {
+    try {
+        const { id_token, user: appleUser } = req.body;
+        if (!id_token) {
+            return res.status(400).json({ success: false, message: 'Apple 인증 정보가 없습니다.' });
+        }
+
+        // Apple ID Token 디코딩 (JWT payload 추출)
+        // Apple ID Token은 JWT 형식 — header.payload.signature
+        const parts = id_token.split('.');
+        if (parts.length !== 3) {
+            return res.status(401).json({ success: false, message: 'Apple 인증 토큰 형식이 올바르지 않습니다.' });
+        }
+
+        let payload;
+        try {
+            const payloadBase64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+            payload = JSON.parse(Buffer.from(payloadBase64, 'base64').toString('utf-8'));
+        } catch (e) {
+            return res.status(401).json({ success: false, message: 'Apple 인증 토큰 파싱 실패' });
+        }
+
+        // issuer 확인 (Apple)
+        if (payload.iss !== 'https://appleid.apple.com') {
+            return res.status(401).json({ success: false, message: 'Apple 인증이 유효하지 않습니다.' });
+        }
+
+        // 만료 확인
+        if (payload.exp && payload.exp * 1000 < Date.now()) {
+            return res.status(401).json({ success: false, message: 'Apple 인증이 만료되었습니다.' });
+        }
+
+        // Apple Service ID (Client ID) 검증
+        const appleClientId = process.env.APPLE_CLIENT_ID;
+        if (appleClientId && payload.aud !== appleClientId) {
+            return res.status(401).json({ success: false, message: 'Apple Client ID가 일치하지 않습니다.' });
+        }
+
+        const appleEmail = (payload.email || '').toLowerCase();
+        if (!appleEmail) {
+            return res.status(401).json({ success: false, message: 'Apple 계정에서 이메일을 가져올 수 없습니다.' });
+        }
+
+        // Apple은 최초 로그인 시에만 이름을 제공
+        const appleName = (appleUser && appleUser.name)
+            ? ((appleUser.name.lastName || '') + (appleUser.name.firstName || '')).trim()
+            : appleEmail.split('@')[0];
+
+        // 기존 회원 조회
+        const result = await query(
+            `SELECT u.id, u.email, u.name, u.role, u.status, u.profile_image, u.org_id,
+                    o.name as org_name
+             FROM users u
+             LEFT JOIN organizations o ON o.id = u.org_id
+             WHERE u.email = $1`,
+            [appleEmail]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: '등록되지 않은 이메일입니다. 먼저 회원가입을 해주세요.',
+                apple_email: appleEmail,
+                apple_name: appleName
+            });
+        }
+
+        const user = result.rows[0];
+
+        // 상태 확인
+        if (user.status === 'pending') {
+            return res.status(403).json({ success: false, message: '승인 대기 중입니다.', status: 'pending' });
+        }
+        if (user.status === 'suspended') {
+            return res.status(403).json({ success: false, message: '정지된 계정입니다.', status: 'suspended' });
+        }
+        if (user.status === 'withdrawn') {
+            return res.status(403).json({ success: false, message: '탈퇴한 계정입니다.', status: 'withdrawn' });
+        }
+
+        // JWT 발급
+        const token = generateToken(user.id, user.email, user.role);
+
+        res.json({
+            success: true,
+            token,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                status: user.status,
+                profile_image: user.profile_image,
+                org_id: user.org_id,
+                org_name: user.org_name || null,
+                can_post_notice: ['super_admin', 'admin'].includes(user.role || '')
+            }
+        });
+    } catch (error) {
+        console.error('Apple login error:', error);
+        res.status(500).json({ success: false, message: 'Apple 로그인 처리 중 오류가 발생했습니다.' });
+    }
+});
+
+/**
+ * GET /api/auth/apple-client-id
+ * 프론트에서 Apple Client ID (Service ID) 가져가기 (공개 API)
+ */
+router.get('/apple-client-id', (req, res) => {
+    const clientId = process.env.APPLE_CLIENT_ID;
+    const redirectUri = process.env.APPLE_REDIRECT_URI || 'https://jc-production-7db6.up.railway.app/api/auth/apple/callback';
+    res.json({ clientId: clientId || null, redirectUri });
+});
+
+/**
+ * POST /api/auth/apple/callback
+ * Apple Sign In 콜백 (리다이렉트 방식 대응)
+ */
+router.post('/apple/callback', (req, res) => {
+    // Apple은 form POST로 콜백을 보냄
+    const { id_token, user } = req.body;
+    // 프론트엔드로 리다이렉트하면서 토큰 전달
+    const userData = user ? encodeURIComponent(user) : '';
+    res.redirect(`/?apple_id_token=${encodeURIComponent(id_token || '')}&apple_user=${userData}#login`);
+});
+
+/**
  * GET /api/auth/google-client-id
  * 프론트에서 Google Client ID 가져가기 (공개 API)
  */
