@@ -4,11 +4,24 @@
   "webDir": "web",
   "server": {
     "url": "https://jc-production-7db6.up.railway.app",
-    "cleartext": false
+    "cleartext": false,
+    "allowNavigation": [
+      "*.google.com",
+      "*.googleapis.com",
+      "*.gstatic.com",
+      "accounts.google.com",
+      "oauth2.googleapis.com",
+      "appleid.apple.com",
+      "*.apple.com",
+      "jc-production-7db6.up.railway.app"
+    ]
   },
   "ios": {
     "contentInset": "always",
     "allowsLinkPreview": false,
     "scheme": "영등포JC"
+  },
+  "android": {
+    "allowMixedContent": false
   }
 }

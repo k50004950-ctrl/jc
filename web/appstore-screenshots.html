@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JC APP - App Store Screenshots</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f0f0f0;
+  padding: 40px;
+}
+h1 {
+  text-align: center;
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 12px;
+}
+.subtitle {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 40px;
+}
+.screenshots {
+  display: flex;
+  gap: 30px;
+  overflow-x: auto;
+  padding: 20px 0 40px;
+  scroll-snap-type: x mandatory;
+}
+
+/* 각 스크린샷 프레임 */
+.screenshot {
+  flex-shrink: 0;
+  width: 414px;
+  height: 896px;
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  scroll-snap-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+/* ===== iOS 상태바 ===== */
+.status-bar {
+  height: 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 28px;
+  position: relative;
+  z-index: 10;
+}
+.status-bar .time { font-size: 15px; font-weight: 600; }
+.status-bar .icons { display: flex; gap: 5px; align-items: center; }
+.status-bar .icons svg { width: 16px; height: 16px; }
+
+/* 노치 (Dynamic Island 스타일) */
+.dynamic-island {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 126px;
+  height: 36px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 20;
+}
+
+/* ===== 상단 카피 영역 ===== */
+.copy-area {
+  padding: 24px 28px 20px;
+  position: relative;
+  z-index: 5;
+}
+.copy-area .headline {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+.copy-area .sub-headline {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+/* ===== 앱 UI 영역 ===== */
+.app-ui {
+  flex: 1;
+  margin: 0 16px 16px;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+/* ===== 배경 그라데이션 유형 ===== */
+.bg-blue {
+  background: linear-gradient(180deg, #1A3FB0 0%, #2B5FE0 40%, #4A7FF7 100%);
+  color: #fff;
+}
+.bg-blue .status-bar .time,
+.bg-blue .status-bar .icons svg { color: #fff; fill: #fff; }
+.bg-blue .dynamic-island { background: rgba(0,0,0,0.6); }
+
+.bg-navy {
+  background: linear-gradient(180deg, #0D1B3E 0%, #1A3068 40%, #243F80 100%);
+  color: #fff;
+}
+.bg-navy .status-bar .time,
+.bg-navy .status-bar .icons svg { color: #fff; fill: #fff; }
+
+.bg-gradient1 {
+  background: linear-gradient(180deg, #1F4FD8 0%, #3B6FF0 50%, #5B8BF5 100%);
+  color: #fff;
+}
+.bg-gradient1 .status-bar .time,
+.bg-gradient1 .status-bar .icons svg { color: #fff; fill: #fff; }
+
+.bg-gradient2 {
+  background: linear-gradient(180deg, #0E2A6B 0%, #1A45A0 50%, #2660D8 100%);
+  color: #fff;
+}
+.bg-gradient2 .status-bar .time,
+.bg-gradient2 .status-bar .icons svg { color: #fff; fill: #fff; }
+
+.bg-gradient3 {
+  background: linear-gradient(180deg, #14306C 0%, #1B4FA0 40%, #3070D4 100%);
+  color: #fff;
+}
+.bg-gradient3 .status-bar .time,
+.bg-gradient3 .status-bar .icons svg { color: #fff; fill: #fff; }
+
+.bg-gradient4 {
+  background: linear-gradient(180deg, #162E70 0%, #1E4498 50%, #2E60C0 100%);
+  color: #fff;
+}
+.bg-gradient4 .status-bar .time,
+.bg-gradient4 .status-bar .icons svg { color: #fff; fill: #fff; }
+
+.bg-gradient5 {
+  background: linear-gradient(180deg, #0F2557 0%, #1A3D8A 40%, #2558B8 100%);
+  color: #fff;
+}
+.bg-gradient5 .status-bar .time,
+.bg-gradient5 .status-bar .icons svg { color: #fff; fill: #fff; }
+
+.bg-gradient6 {
+  background: linear-gradient(180deg, #0C1E4A 0%, #153472 50%, #1E4A9A 100%);
+  color: #fff;
+}
+.bg-gradient6 .status-bar .time,
+.bg-gradient6 .status-bar .icons svg { color: #fff; fill: #fff; }
+
+.bg-gradient7 {
+  background: linear-gradient(180deg, #10285E 0%, #1A408E 50%, #2558B8 100%);
+  color: #fff;
+}
+.bg-gradient7 .status-bar .time,
+.bg-gradient7 .status-bar .icons svg { color: #fff; fill: #fff; }
+
+/* ===== 내부 앱 UI 스타일 ===== */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fff;
+}
+.app-header .title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.app-header .action {
+  font-size: 14px;
+  color: #1F4FD8;
+  font-weight: 600;
+}
+
+.app-content {
+  padding: 12px 16px;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* 카드 스타일 */
+.ui-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.ui-card .card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+.ui-card .card-desc {
+  font-size: 12px;
+  color: #6B7280;
+  line-height: 1.4;
+}
+.ui-card .card-meta {
+  font-size: 11px;
+  color: #9CA3AF;
+  margin-top: 6px;
+}
+
+/* 배지 */
+.badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+.badge-pin { background: #FEF3C7; color: #92400E; }
+.badge-new { background: #DBEAFE; color: #1E40AF; }
+.badge-meet { background: #EDE9FE; color: #6D28D9; }
+.badge-vote { background: #DCFCE7; color: #166534; }
+
+/* 하단 탭바 */
+.tab-bar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 56px;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+  padding-bottom: 4px;
+}
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  color: #9CA3AF;
+}
+.tab-item.active { color: #1F4FD8; }
+.tab-item svg { width: 22px; height: 22px; }
+.tab-icon {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* 홈 배너 */
+.home-banner {
+  background: linear-gradient(135deg, #1F4FD8, #3B82F6);
+  border-radius: 12px;
+  padding: 18px;
+  color: #fff;
+  margin-bottom: 14px;
+}
+.home-banner .banner-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.home-banner .banner-desc {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* 섹션 타이틀 */
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 12px 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.section-title .more {
+  font-size: 12px;
+  color: #9CA3AF;
+  font-weight: 400;
+}
+
+/* 투표 카드 */
+.vote-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #374151;
+}
+.vote-option.selected {
+  border-color: #1F4FD8;
+  background: #EFF6FF;
+  color: #1E40AF;
+  font-weight: 600;
+}
+.vote-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  flex-shrink: 0;
+}
+.vote-option.selected .vote-radio {
+  border-color: #1F4FD8;
+  background: #1F4FD8;
+  box-shadow: inset 0 0 0 3px #fff;
+}
+
+/* 지도 UI */
+.map-container {
+  background: #e8edf5;
+  border-radius: 12px;
+  height: 260px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.map-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(180,195,220,0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180,195,220,0.3) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+.map-road {
+  position: absolute;
+  background: rgba(255,255,255,0.7);
+}
+.map-road.h {
+  height: 3px;
+  width: 100%;
+}
+.map-road.v {
+  width: 3px;
+  height: 100%;
+}
+.map-pin {
+  position: absolute;
+  width: 28px;
+  height: 36px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.map-pin-body {
+  width: 24px;
+  height: 24px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.map-pin-body.blue { background: #1F4FD8; }
+.map-pin-body.red { background: #DC2626; }
+.map-pin-body.green { background: #16A34A; }
+.map-pin-body.amber { background: #F59E0B; }
+.map-pin-dot {
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-radius: 50%;
+  transform: rotate(45deg);
+}
+
+.map-search {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #9CA3AF;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.map-search svg { width: 16px; height: 16px; fill: #9CA3AF; flex-shrink: 0; }
+
+/* 소모임 카드 */
+.club-card {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+.club-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.club-info { flex: 1; }
+.club-info .name { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+.club-info .desc { font-size: 12px; color: #6B7280; margin-top: 2px; }
+.club-info .members { font-size: 11px; color: #9CA3AF; margin-top: 2px; }
+.club-badge {
+  background: #DC2626;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+/* 알림 카드 */
+.noti-card {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  align-items: flex-start;
+}
+.noti-card.unread { background: #EFF6FF; }
+.noti-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.noti-info { flex: 1; }
+.noti-info .noti-title { font-size: 13px; font-weight: 600; color: #1a1a1a; line-height: 1.3; }
+.noti-info .noti-time { font-size: 11px; color: #9CA3AF; margin-top: 2px; }
+.noti-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1F4FD8;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+/* 승인 화면 */
+.approval-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+.approval-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.approval-num.done { background: #1F4FD8; color: #fff; }
+.approval-num.current { background: #DBEAFE; color: #1E40AF; border: 2px solid #1F4FD8; }
+.approval-num.pending { background: #f3f4f6; color: #9CA3AF; }
+.approval-text { font-size: 13px; color: #374151; font-weight: 500; }
+.approval-check { margin-left: auto; font-size: 16px; }
+
+/* 네트워크/확장 */
+.network-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 3px;
+}
+
+/* 하단 홈인디케이터 */
+.home-indicator {
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home-indicator-bar {
+  width: 134px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.2);
+}
+
+/* 버튼 */
+.btn-primary {
+  background: #1F4FD8;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  width: 100%;
+  text-align: center;
+}
+
+/* 출석 바 */
+.attend-bar {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+}
+.attend-item {
+  flex: 1;
+  text-align: center;
+  padding: 8px 4px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* 프로필 아바타 */
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+/* 안내문 */
+.guide-box {
+  text-align: center;
+  padding: 40px 20px;
+}
+.guide-box p { margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<h1>JC APP - iOS 앱스토어 스크린샷</h1>
+<p class="subtitle">iPhone 6.5" (1242×2688) 기준 · 브라우저에서 각 스크린샷을 캡처하세요</p>
+
+<div class="screenshots">
+
+<!-- ========== 1. 메인 소개 ========== -->
+<div class="screenshot bg-gradient1" style="display:flex;flex-direction:column;">
+  <div style="position:relative;">
+    <div class="dynamic-island"></div>
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <span class="icons">
+        <svg viewBox="0 0 16 16"><path d="M1 11h2v4H1zM5 8h2v7H5zM9 5h2v10H9zM13 2h2v13h-2z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M8 2C4.7 2 2 4.1 2 5.5L3.3 7c1.2-1 2.8-1.5 4.7-1.5s3.5.5 4.7 1.5L14 5.5C14 4.1 11.3 2 8 2zM8 7c-1.8 0-3.2.6-4 1.3L5.3 10c.7-.5 1.6-.8 2.7-.8s2 .3 2.7.8L12 8.3C11.2 7.6 9.8 7 8 7zm0 5c-.8 0-1.5.3-2 .7L8 15l2-2.3c-.5-.4-1.2-.7-2-.7z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M2 5h10v7H2zM13 7h1v3h-1z" fill="currentColor" rx="1"/></svg>
+      </span>
+    </div>
+  </div>
+  <div class="copy-area" style="text-align:center; padding-top:40px;">
+    <div class="headline">JC 운영을 하나로</div>
+    <div class="sub-headline">투표 · 공지 · 회원관리까지 한 번에</div>
+  </div>
+  <div style="flex:1; display:flex; flex-direction:column; padding:0 16px 16px;">
+    <div class="app-ui" style="flex:1; display:flex; flex-direction:column;">
+      <div class="app-header">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:28px;height:28px;background:#1F4FD8;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800;">JC</div>
+          <span class="title">영등포 JC</span>
+        </div>
+        <div style="display:flex;gap:12px;color:#6B7280;font-size:18px;">🔔 ☰</div>
+      </div>
+      <div class="app-content" style="flex:1;background:#f9fafb;">
+        <div class="home-banner">
+          <div class="banner-title">2026년 3월 정기총회</div>
+          <div class="banner-desc">3월 28일 (토) 14:00 · 영등포구청 대회의실</div>
+        </div>
+        <div class="section-title">공지사항 <span class="more">더보기 ›</span></div>
+        <div class="ui-card">
+          <div style="display:flex;gap:4px;margin-bottom:4px;">
+            <span class="badge badge-pin">고정</span>
+            <span class="badge badge-new">N</span>
+          </div>
+          <div class="card-title">3월 이사회 안건 사전 공유</div>
+          <div class="card-desc">이번 이사회에서 논의할 주요 안건을 공유합니다...</div>
+          <div class="card-meta">관리자 · 3월 25일 · 조회 48</div>
+        </div>
+        <div class="ui-card">
+          <div class="card-title">회비 납부 안내 (3월)</div>
+          <div class="card-desc">3월 회비 납부 기한은 3월 31일까지입니다.</div>
+          <div class="card-meta">재무이사 · 3월 20일 · 조회 82</div>
+        </div>
+        <div class="section-title">다가오는 일정 <span class="more">더보기 ›</span></div>
+        <div class="ui-card" style="display:flex;gap:12px;align-items:center;">
+          <div style="background:#EFF6FF;border-radius:8px;padding:8px 10px;text-align:center;">
+            <div style="font-size:18px;font-weight:800;color:#1F4FD8;">28</div>
+            <div style="font-size:10px;color:#6B7280;">3월</div>
+          </div>
+          <div>
+            <div class="card-title">정기총회</div>
+            <div class="card-desc">14:00 · 영등포구청 대회의실</div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item active"><div class="tab-icon">🏠</div>홈</div>
+        <div class="tab-item"><div class="tab-icon">📋</div>게시판</div>
+        <div class="tab-item"><div class="tab-icon">📅</div>일정</div>
+        <div class="tab-item"><div class="tab-icon">👥</div>회원</div>
+        <div class="tab-item"><div class="tab-icon">🗳️</div>회의</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 2. 회원 전용 가입 ========== -->
+<div class="screenshot bg-gradient2" style="display:flex;flex-direction:column;">
+  <div style="position:relative;">
+    <div class="dynamic-island"></div>
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <span class="icons">
+        <svg viewBox="0 0 16 16"><path d="M1 11h2v4H1zM5 8h2v7H5zM9 5h2v10H9zM13 2h2v13h-2z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M8 2C4.7 2 2 4.1 2 5.5L3.3 7c1.2-1 2.8-1.5 4.7-1.5s3.5.5 4.7 1.5L14 5.5C14 4.1 11.3 2 8 2zM8 7c-1.8 0-3.2.6-4 1.3L5.3 10c.7-.5 1.6-.8 2.7-.8s2 .3 2.7.8L12 8.3C11.2 7.6 9.8 7 8 7zm0 5c-.8 0-1.5.3-2 .7L8 15l2-2.3c-.5-.4-1.2-.7-2-.7z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M2 5h10v7H2zM13 7h1v3h-1z" fill="currentColor" rx="1"/></svg>
+      </span>
+    </div>
+  </div>
+  <div class="copy-area" style="text-align:center; padding-top:40px;">
+    <div class="headline">승인된 회원만 가입</div>
+    <div class="sub-headline">로컬 기반 안전한 커뮤니티</div>
+  </div>
+  <div style="flex:1; display:flex; flex-direction:column; padding:0 16px 16px;">
+    <div class="app-ui" style="flex:1; display:flex; flex-direction:column;">
+      <div class="app-header">
+        <span class="title">회원가입</span>
+        <span style="font-size:12px;color:#9CA3AF;">2/6 단계</span>
+      </div>
+      <div class="app-content" style="flex:1;">
+        <!-- 진행 바 -->
+        <div style="height:4px;background:#e5e7eb;border-radius:2px;margin-bottom:20px;overflow:hidden;">
+          <div style="height:100%;width:33%;background:#1F4FD8;border-radius:2px;"></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">이메일</label>
+          <div style="border:1.5px solid #d1d5db;border-radius:8px;padding:12px 14px;font-size:14px;color:#1a1a1a;">hong@example.com</div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">비밀번호</label>
+          <div style="border:1.5px solid #1F4FD8;border-radius:8px;padding:12px 14px;font-size:14px;color:#1a1a1a;display:flex;justify-content:space-between;">
+            <span>••••••••••</span>
+            <span style="color:#9CA3AF;">👁</span>
+          </div>
+        </div>
+        <!-- 비밀번호 강도 -->
+        <div style="margin-bottom:16px;">
+          <div style="height:4px;background:#e5e7eb;border-radius:2px;margin-bottom:8px;overflow:hidden;">
+            <div style="height:100%;width:100%;background:#16A34A;border-radius:2px;"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+            <div style="font-size:11px;color:#16A34A;">✓ 8자 이상</div>
+            <div style="font-size:11px;color:#16A34A;">✓ 대문자 포함</div>
+            <div style="font-size:11px;color:#16A34A;">✓ 숫자 포함</div>
+            <div style="font-size:11px;color:#16A34A;">✓ 특수문자 포함</div>
+          </div>
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">비밀번호 확인</label>
+          <div style="border:1.5px solid #16A34A;border-radius:8px;padding:12px 14px;font-size:14px;color:#1a1a1a;display:flex;justify-content:space-between;">
+            <span>••••••••••</span>
+            <span style="color:#16A34A;font-size:12px;">✓ 일치</span>
+          </div>
+        </div>
+        <div style="margin-top:auto;">
+          <div class="btn-primary">다음 단계</div>
+        </div>
+        <!-- 가입 승인 안내 -->
+        <div style="margin-top:16px;background:#F0F7FF;border-radius:10px;padding:12px;display:flex;gap:8px;align-items:flex-start;">
+          <span style="font-size:16px;">🔒</span>
+          <div style="font-size:11px;color:#1E40AF;line-height:1.5;">
+            가입 완료 후 관리자 승인이 필요합니다.<br>승인 완료 시 알림을 보내드립니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 3. 투표 기능 ========== -->
+<div class="screenshot bg-gradient3" style="display:flex;flex-direction:column;">
+  <div style="position:relative;">
+    <div class="dynamic-island"></div>
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <span class="icons">
+        <svg viewBox="0 0 16 16"><path d="M1 11h2v4H1zM5 8h2v7H5zM9 5h2v10H9zM13 2h2v13h-2z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M8 2C4.7 2 2 4.1 2 5.5L3.3 7c1.2-1 2.8-1.5 4.7-1.5s3.5.5 4.7 1.5L14 5.5C14 4.1 11.3 2 8 2zM8 7c-1.8 0-3.2.6-4 1.3L5.3 10c.7-.5 1.6-.8 2.7-.8s2 .3 2.7.8L12 8.3C11.2 7.6 9.8 7 8 7zm0 5c-.8 0-1.5.3-2 .7L8 15l2-2.3c-.5-.4-1.2-.7-2-.7z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M2 5h10v7H2zM13 7h1v3h-1z" fill="currentColor" rx="1"/></svg>
+      </span>
+    </div>
+  </div>
+  <div class="copy-area" style="text-align:center; padding-top:40px;">
+    <div class="headline">총회·이사회 투표를<br>모바일로</div>
+    <div class="sub-headline">참석 여부까지 한 번에 관리</div>
+  </div>
+  <div style="flex:1; display:flex; flex-direction:column; padding:0 16px 16px;">
+    <div class="app-ui" style="flex:1; display:flex; flex-direction:column;">
+      <div class="app-header">
+        <span style="color:#6B7280;font-size:14px;">← 뒤로</span>
+        <span class="title">정기총회</span>
+        <span></span>
+      </div>
+      <div class="app-content" style="flex:1;background:#f9fafb;">
+        <!-- 회의 정보 -->
+        <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid #f0f0f0;">
+          <div style="display:flex;gap:4px;margin-bottom:6px;">
+            <span class="badge badge-meet">정기총회</span>
+            <span class="badge" style="background:#DCFCE7;color:#166534;">진행 중</span>
+          </div>
+          <div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:4px;">2026년 3월 정기총회</div>
+          <div style="font-size:12px;color:#6B7280;">3월 28일 14:00 · 영등포구청</div>
+        </div>
+        <!-- 출석 현황 -->
+        <div class="attend-bar">
+          <div class="attend-item" style="background:#DCFCE7;color:#166534;">참석 18</div>
+          <div class="attend-item" style="background:#FEF3C7;color:#92400E;">옵서버 3</div>
+          <div class="attend-item" style="background:#FEE2E2;color:#991B1B;">불참 2</div>
+        </div>
+        <!-- 투표 -->
+        <div style="font-size:14px;font-weight:700;color:#1a1a1a;margin:14px 0 8px;">🗳️ 2026년도 사업계획 승인</div>
+        <div class="vote-option selected">
+          <div class="vote-radio"></div>
+          찬성
+        </div>
+        <div class="vote-option">
+          <div class="vote-radio"></div>
+          반대
+        </div>
+        <div class="vote-option">
+          <div class="vote-radio"></div>
+          기권
+        </div>
+        <div style="margin-top:10px;background:#EFF6FF;border-radius:8px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:12px;color:#1E40AF;font-weight:600;">투표 현황</span>
+          <span style="font-size:12px;color:#1E40AF;">16/18 투표 완료</span>
+        </div>
+        <!-- 두번째 투표 -->
+        <div style="font-size:14px;font-weight:700;color:#1a1a1a;margin:14px 0 8px;">🗳️ 신규 이사 선임</div>
+        <div class="vote-option">
+          <div class="vote-radio"></div>
+          찬성
+        </div>
+        <div class="vote-option">
+          <div class="vote-radio"></div>
+          반대
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 4. 공지 & 푸시 알림 ========== -->
+<div class="screenshot bg-gradient4" style="display:flex;flex-direction:column;">
+  <div style="position:relative;">
+    <div class="dynamic-island"></div>
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <span class="icons">
+        <svg viewBox="0 0 16 16"><path d="M1 11h2v4H1zM5 8h2v7H5zM9 5h2v10H9zM13 2h2v13h-2z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M8 2C4.7 2 2 4.1 2 5.5L3.3 7c1.2-1 2.8-1.5 4.7-1.5s3.5.5 4.7 1.5L14 5.5C14 4.1 11.3 2 8 2zM8 7c-1.8 0-3.2.6-4 1.3L5.3 10c.7-.5 1.6-.8 2.7-.8s2 .3 2.7.8L12 8.3C11.2 7.6 9.8 7 8 7zm0 5c-.8 0-1.5.3-2 .7L8 15l2-2.3c-.5-.4-1.2-.7-2-.7z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M2 5h10v7H2zM13 7h1v3h-1z" fill="currentColor" rx="1"/></svg>
+      </span>
+    </div>
+  </div>
+  <div class="copy-area" style="text-align:center; padding-top:40px;">
+    <div class="headline">공지와 일정,<br>놓치지 마세요</div>
+    <div class="sub-headline">전 회원 푸시 알림 자동 발송</div>
+  </div>
+  <div style="flex:1; display:flex; flex-direction:column; padding:0 16px 16px;">
+    <div class="app-ui" style="flex:1; display:flex; flex-direction:column;">
+      <div class="app-header">
+        <span class="title">알림</span>
+        <span class="action">모두 읽음</span>
+      </div>
+      <div class="app-content" style="flex:1;">
+        <div class="noti-card unread">
+          <div class="noti-icon" style="background:#DBEAFE;">📢</div>
+          <div class="noti-info">
+            <div class="noti-title">새 공지사항이 등록되었습니다</div>
+            <div style="font-size:12px;color:#374151;margin-top:2px;">3월 이사회 안건 사전 공유</div>
+            <div class="noti-time">5분 전</div>
+          </div>
+          <div class="noti-dot"></div>
+        </div>
+        <div class="noti-card unread">
+          <div class="noti-icon" style="background:#FEF3C7;">📅</div>
+          <div class="noti-info">
+            <div class="noti-title">일정 알림: 정기총회 D-3</div>
+            <div style="font-size:12px;color:#374151;margin-top:2px;">3월 28일 (토) 14:00</div>
+            <div class="noti-time">1시간 전</div>
+          </div>
+          <div class="noti-dot"></div>
+        </div>
+        <div class="noti-card unread">
+          <div class="noti-icon" style="background:#EDE9FE;">🗳️</div>
+          <div class="noti-info">
+            <div class="noti-title">투표가 시작되었습니다</div>
+            <div style="font-size:12px;color:#374151;margin-top:2px;">2026년도 사업계획 승인</div>
+            <div class="noti-time">2시간 전</div>
+          </div>
+          <div class="noti-dot"></div>
+        </div>
+        <div class="noti-card">
+          <div class="noti-icon" style="background:#DCFCE7;">✅</div>
+          <div class="noti-info">
+            <div class="noti-title">가입이 승인되었습니다</div>
+            <div style="font-size:12px;color:#374151;margin-top:2px;">영등포 JC에 오신 것을 환영합니다!</div>
+            <div class="noti-time">어제</div>
+          </div>
+        </div>
+        <div class="noti-card">
+          <div class="noti-icon" style="background:#FEE2E2;">💬</div>
+          <div class="noti-info">
+            <div class="noti-title">회비 납부 공지에 댓글이 달렸습니다</div>
+            <div class="noti-time">어제</div>
+          </div>
+        </div>
+        <div class="noti-card">
+          <div class="noti-icon" style="background:#F0F7FF;">👋</div>
+          <div class="noti-info">
+            <div class="noti-title">골프 소모임에 초대되었습니다</div>
+            <div class="noti-time">3일 전</div>
+          </div>
+        </div>
+        <div class="noti-card">
+          <div class="noti-icon" style="background:#FEF3C7;">📋</div>
+          <div class="noti-info">
+            <div class="noti-title">참석조사: 3월 정기총회</div>
+            <div class="noti-time">5일 전</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 5. JC 지도 ========== -->
+<div class="screenshot bg-gradient5" style="display:flex;flex-direction:column;">
+  <div style="position:relative;">
+    <div class="dynamic-island"></div>
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <span class="icons">
+        <svg viewBox="0 0 16 16"><path d="M1 11h2v4H1zM5 8h2v7H5zM9 5h2v10H9zM13 2h2v13h-2z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M8 2C4.7 2 2 4.1 2 5.5L3.3 7c1.2-1 2.8-1.5 4.7-1.5s3.5.5 4.7 1.5L14 5.5C14 4.1 11.3 2 8 2zM8 7c-1.8 0-3.2.6-4 1.3L5.3 10c.7-.5 1.6-.8 2.7-.8s2 .3 2.7.8L12 8.3C11.2 7.6 9.8 7 8 7zm0 5c-.8 0-1.5.3-2 .7L8 15l2-2.3c-.5-.4-1.2-.7-2-.7z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M2 5h10v7H2zM13 7h1v3h-1z" fill="currentColor" rx="1"/></svg>
+      </span>
+    </div>
+  </div>
+  <div class="copy-area" style="text-align:center; padding-top:40px;">
+    <div class="headline">회원 사업장을 한눈에</div>
+    <div class="sub-headline">내 주변 네트워크 확인</div>
+  </div>
+  <div style="flex:1; display:flex; flex-direction:column; padding:0 16px 16px;">
+    <div class="app-ui" style="flex:1; display:flex; flex-direction:column;">
+      <div class="app-header">
+        <span class="title">JC 지도</span>
+        <span class="action">필터</span>
+      </div>
+      <div style="flex:1;position:relative;overflow:hidden;">
+        <!-- 지도 영역 -->
+        <div class="map-container" style="height:100%;border-radius:0;margin:0;">
+          <div class="map-grid"></div>
+          <!-- 도로 -->
+          <div class="map-road h" style="top:30%;"></div>
+          <div class="map-road h" style="top:55%;"></div>
+          <div class="map-road h" style="top:80%;"></div>
+          <div class="map-road v" style="left:25%;"></div>
+          <div class="map-road v" style="left:50%;"></div>
+          <div class="map-road v" style="left:75%;"></div>
+          <!-- 블록 (건물 표시) -->
+          <div style="position:absolute;top:10%;left:8%;width:40px;height:28px;background:rgba(200,210,225,0.5);border-radius:3px;"></div>
+          <div style="position:absolute;top:35%;left:55%;width:55px;height:35px;background:rgba(200,210,225,0.5);border-radius:3px;"></div>
+          <div style="position:absolute;top:60%;left:30%;width:35px;height:45px;background:rgba(200,210,225,0.5);border-radius:3px;"></div>
+          <div style="position:absolute;top:15%;left:60%;width:50px;height:30px;background:rgba(200,210,225,0.5);border-radius:3px;"></div>
+          <div style="position:absolute;top:70%;left:65%;width:40px;height:25px;background:rgba(200,210,225,0.5);border-radius:3px;"></div>
+          <!-- 핀 -->
+          <div class="map-pin" style="top:18%;left:20%;">
+            <div class="map-pin-body blue"><div class="map-pin-dot"></div></div>
+          </div>
+          <div class="map-pin" style="top:28%;left:60%;">
+            <div class="map-pin-body blue"><div class="map-pin-dot"></div></div>
+          </div>
+          <div class="map-pin" style="top:45%;left:35%;">
+            <div class="map-pin-body amber"><div class="map-pin-dot"></div></div>
+          </div>
+          <div class="map-pin" style="top:50%;left:70%;">
+            <div class="map-pin-body blue"><div class="map-pin-dot"></div></div>
+          </div>
+          <div class="map-pin" style="top:65%;left:15%;">
+            <div class="map-pin-body green"><div class="map-pin-dot"></div></div>
+          </div>
+          <div class="map-pin" style="top:75%;left:50%;">
+            <div class="map-pin-body blue"><div class="map-pin-dot"></div></div>
+          </div>
+          <div class="map-pin" style="top:38%;left:80%;">
+            <div class="map-pin-body red"><div class="map-pin-dot"></div></div>
+          </div>
+          <!-- 검색 바 -->
+          <div class="map-search">
+            <svg viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 10-1.397 1.398h-.001l3.85 3.85a1 1 0 001.415-1.414l-3.85-3.85zm-5.242.156a5 5 0 110-10 5 5 0 010 10z"/></svg>
+            회원명 / 업종 / 로컬명 검색
+          </div>
+          <!-- 선택된 핀 팝업 -->
+          <div style="position:absolute;top:37%;left:22%;background:#fff;border-radius:10px;padding:10px 12px;box-shadow:0 2px 12px rgba(0,0,0,0.12);min-width:160px;z-index:5;">
+            <div style="font-size:13px;font-weight:700;color:#1a1a1a;">김영호</div>
+            <div style="font-size:11px;color:#6B7280;margin-top:2px;">카페 · 영등포구 당산동</div>
+            <div style="font-size:11px;color:#1F4FD8;margin-top:4px;font-weight:600;">상세보기 ›</div>
+          </div>
+          <!-- 내 위치 버튼 -->
+          <div style="position:absolute;bottom:14px;right:14px;width:44px;height:44px;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;font-size:20px;">📍</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 6. 소모임 & 커뮤니티 ========== -->
+<div class="screenshot bg-gradient6" style="display:flex;flex-direction:column;">
+  <div style="position:relative;">
+    <div class="dynamic-island"></div>
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <span class="icons">
+        <svg viewBox="0 0 16 16"><path d="M1 11h2v4H1zM5 8h2v7H5zM9 5h2v10H9zM13 2h2v13h-2z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M8 2C4.7 2 2 4.1 2 5.5L3.3 7c1.2-1 2.8-1.5 4.7-1.5s3.5.5 4.7 1.5L14 5.5C14 4.1 11.3 2 8 2zM8 7c-1.8 0-3.2.6-4 1.3L5.3 10c.7-.5 1.6-.8 2.7-.8s2 .3 2.7.8L12 8.3C11.2 7.6 9.8 7 8 7zm0 5c-.8 0-1.5.3-2 .7L8 15l2-2.3c-.5-.4-1.2-.7-2-.7z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M2 5h10v7H2zM13 7h1v3h-1z" fill="currentColor" rx="1"/></svg>
+      </span>
+    </div>
+  </div>
+  <div class="copy-area" style="text-align:center; padding-top:40px;">
+    <div class="headline">소모임과 게시판 운영</div>
+    <div class="sub-headline">로컬 커뮤니티 활성화</div>
+  </div>
+  <div style="flex:1; display:flex; flex-direction:column; padding:0 16px 16px;">
+    <div class="app-ui" style="flex:1; display:flex; flex-direction:column;">
+      <div class="app-header">
+        <span class="title">소모임</span>
+        <span class="action">+ 만들기</span>
+      </div>
+      <div class="app-content" style="flex:1;background:#f9fafb;">
+        <!-- 초대 섹션 -->
+        <div style="background:#FEF3C7;border-radius:10px;padding:12px;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+          <span style="font-size:20px;">✉️</span>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:#92400E;">독서 모임에 초대되었습니다</div>
+            <div style="font-size:11px;color:#B45309;">김회장님이 초대했습니다</div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <div style="padding:6px 12px;background:#16A34A;color:#fff;border-radius:6px;font-size:11px;font-weight:600;">수락</div>
+            <div style="padding:6px 12px;background:#e5e7eb;color:#6B7280;border-radius:6px;font-size:11px;font-weight:600;">거절</div>
+          </div>
+        </div>
+        <div class="section-title" style="margin-top:0;">내 소모임</div>
+        <div class="club-card">
+          <div class="club-avatar" style="background:#EFF6FF;">⛳</div>
+          <div class="club-info">
+            <div class="name">골프 소모임</div>
+            <div class="desc">주말 라운딩 & 연습 모임</div>
+            <div class="members">멤버 12명 · 김영호 운영</div>
+          </div>
+          <div class="club-badge">3</div>
+        </div>
+        <div class="club-card">
+          <div class="club-avatar" style="background:#FEF3C7;">🍻</div>
+          <div class="club-info">
+            <div class="name">맛집 탐방</div>
+            <div class="desc">영등포 맛집 같이 가요</div>
+            <div class="members">멤버 8명 · 박수현 운영</div>
+          </div>
+          <div class="club-badge">1</div>
+        </div>
+        <div class="club-card">
+          <div class="club-avatar" style="background:#DCFCE7;">💻</div>
+          <div class="club-info">
+            <div class="name">IT 스터디</div>
+            <div class="desc">디지털 트렌드 공유</div>
+            <div class="members">멤버 6명 · 이정민 운영</div>
+          </div>
+        </div>
+        <div class="club-card">
+          <div class="club-avatar" style="background:#EDE9FE;">📖</div>
+          <div class="club-info">
+            <div class="name">독서 모임</div>
+            <div class="desc">월 1권 함께 읽기</div>
+            <div class="members">멤버 9명 · 최지영 운영</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 7. 확장 기능 (네트워크) ========== -->
+<div class="screenshot bg-gradient7" style="display:flex;flex-direction:column;">
+  <div style="position:relative;">
+    <div class="dynamic-island"></div>
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <span class="icons">
+        <svg viewBox="0 0 16 16"><path d="M1 11h2v4H1zM5 8h2v7H5zM9 5h2v10H9zM13 2h2v13h-2z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M8 2C4.7 2 2 4.1 2 5.5L3.3 7c1.2-1 2.8-1.5 4.7-1.5s3.5.5 4.7 1.5L14 5.5C14 4.1 11.3 2 8 2zM8 7c-1.8 0-3.2.6-4 1.3L5.3 10c.7-.5 1.6-.8 2.7-.8s2 .3 2.7.8L12 8.3C11.2 7.6 9.8 7 8 7zm0 5c-.8 0-1.5.3-2 .7L8 15l2-2.3c-.5-.4-1.2-.7-2-.7z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M2 5h10v7H2zM13 7h1v3h-1z" fill="currentColor" rx="1"/></svg>
+      </span>
+    </div>
+  </div>
+  <div class="copy-area" style="text-align:center; padding-top:40px;">
+    <div class="headline">타 로컬과 연결되는<br>네트워크</div>
+    <div class="sub-headline">전국 JC를 하나로</div>
+  </div>
+  <div style="flex:1; display:flex; flex-direction:column; padding:0 16px 16px;">
+    <div class="app-ui" style="flex:1; display:flex; flex-direction:column;">
+      <div class="app-header">
+        <span class="title">JC 포털</span>
+        <span class="action">지역 선택</span>
+      </div>
+      <div class="app-content" style="flex:1;background:#f9fafb;">
+        <!-- 포털 배너 -->
+        <div style="background:linear-gradient(135deg,#1F4FD8,#6366F1);border-radius:12px;padding:18px;color:#fff;margin-bottom:14px;">
+          <div style="font-size:16px;font-weight:700;margin-bottom:4px;">전국 JC 네트워크</div>
+          <div style="font-size:12px;opacity:0.9;">42개 로컬 · 2,800+ 회원 연결</div>
+        </div>
+        <!-- 로컬 목록 -->
+        <div class="section-title">참여 로컬 <span class="more">전체보기 ›</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+          <div class="network-node" style="background:#EFF6FF;color:#1E40AF;">영등포 JC</div>
+          <div class="network-node" style="background:#F0FDF4;color:#166534;">강남 JC</div>
+          <div class="network-node" style="background:#FEF3C7;color:#92400E;">마포 JC</div>
+          <div class="network-node" style="background:#EDE9FE;color:#6D28D9;">서초 JC</div>
+          <div class="network-node" style="background:#FEE2E2;color:#991B1B;">송파 JC</div>
+          <div class="network-node" style="background:#DBEAFE;color:#1E40AF;">부산 JC</div>
+          <div class="network-node" style="background:#F0FDF4;color:#166534;">대구 JC</div>
+          <div class="network-node" style="background:#FEF3C7;color:#92400E;">인천 JC</div>
+        </div>
+        <div class="section-title">타 로컬 공지</div>
+        <div class="ui-card">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+            <div class="avatar" style="width:22px;height:22px;font-size:9px;background:#16A34A;">강</div>
+            <span style="font-size:11px;color:#6B7280;">강남 JC</span>
+          </div>
+          <div class="card-title">강남 JC 합동 봉사활동 참가 모집</div>
+          <div class="card-desc">4월 봉사활동에 타 로컬 회원도 참여 가능합니다.</div>
+          <div class="card-meta">3월 27일 · 참여 신청 24명</div>
+        </div>
+        <div class="ui-card">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+            <div class="avatar" style="width:22px;height:22px;font-size:9px;background:#F59E0B;">마</div>
+            <span style="font-size:11px;color:#6B7280;">마포 JC</span>
+          </div>
+          <div class="card-title">전국 JC 체육대회 개최 안내</div>
+          <div class="card-desc">5월 전국 JC 연합 체육대회가 열립니다.</div>
+          <div class="card-meta">3월 25일 · 참여 로컬 12개</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- 하단 안내 -->
+<div style="text-align:center;padding:20px;color:#888;font-size:13px;">
+  <p>각 스크린샷을 1242×2688 사이즈로 캡처하세요.</p>
+  <p>브라우저 개발자 도구 → 디바이스 모드에서 정확한 크기 지정이 가능합니다.</p>
+  <p style="margin-top:12px;font-weight:600;">캡처 팁: Chrome DevTools → Toggle Device Toolbar → 414×896 → 캡처 후 3x 스케일 적용</p>
+</div>
+
+</body>
+</html>

@@ -395,6 +395,16 @@ router.post('/google', async (req, res) => {
     }
 });
 
+// Google OAuth 상태 저장소 (메모리)
+const _googleOAuthResults = new Map();
+// 5분 후 자동 정리
+setInterval(() => {
+    const now = Date.now();
+    for (const [k, v] of _googleOAuthResults) {
+        if (now - v.createdAt > 300000) _googleOAuthResults.delete(k);
+    }
+}, 60000);
+
 /**
  * GET /api/auth/google/redirect
  * Google OAuth 리다이렉트 방식 (WebView 호환)
@@ -403,6 +413,7 @@ router.get('/google/redirect', (req, res) => {
     const clientId = process.env.GOOGLE_CLIENT_ID;
     if (!clientId) return res.status(500).send('Google Client ID not configured');
 
+    const state = req.query.state || '';
     const redirectUri = (process.env.BASE_URL || 'https://jc-production-7db6.up.railway.app') + '/api/auth/google/callback';
     const scope = 'openid email profile';
     const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
@@ -410,6 +421,7 @@ router.get('/google/redirect', (req, res) => {
         + '&redirect_uri=' + encodeURIComponent(redirectUri)
         + '&response_type=code'
         + '&scope=' + encodeURIComponent(scope)
+        + '&state=' + encodeURIComponent(state)
         + '&prompt=select_account';
 
     res.redirect(authUrl);
@@ -421,7 +433,7 @@ router.get('/google/redirect', (req, res) => {
  */
 router.get('/google/callback', async (req, res) => {
     try {
-        const { code } = req.query;
+        const { code, state } = req.query;
         if (!code) return res.redirect('/?google_error=no_code#login');
 
         const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -449,7 +461,10 @@ router.get('/google/callback', async (req, res) => {
             req2.end();
         });
 
-        if (!tokenData.id_token) return res.redirect('/?google_error=token_failed#login');
+        if (!tokenData.id_token) {
+            if (state) { _googleOAuthResults.set(state, { error: 'token_failed', createdAt: Date.now() }); }
+            return res.redirect('/?google_error=token_failed#login');
+        }
 
         const parts = tokenData.id_token.split('.');
         const payload = JSON.parse(Buffer.from(parts[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf-8'));
@@ -463,6 +478,11 @@ router.get('/google/callback', async (req, res) => {
              FROM users u LEFT JOIN organizations o ON o.id = u.org_id WHERE u.email = $1`, [googleEmail]);
 
         if (result.rows.length === 0) {
+            // 미가입 — state가 있으면 폴링 결과 저장
+            if (state) {
+                _googleOAuthResults.set(state, { signup: true, email: googleEmail, name: googleName, createdAt: Date.now() });
+                return res.send('<html><body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;"><div style="text-align:center;"><h2>회원가입이 필요합니다</h2><p>앱으로 돌아가주세요</p></div></body></html>');
+            }
             return res.redirect('/?google_signup_email=' + encodeURIComponent(googleEmail) + '&google_signup_name=' + encodeURIComponent(googleName) + '#signup');
         }
 
@@ -470,16 +490,41 @@ router.get('/google/callback', async (req, res) => {
         if (user.status !== 'active') return res.redirect('/?google_error=' + user.status + '#login');
 
         const token = generateToken(user.id, user.email, user.role);
+        const userData = {
+            id: user.id, email: user.email, name: user.name, role: user.role, status: user.status,
+            profile_image: user.profile_image, org_id: user.org_id, org_name: user.org_name || null,
+            can_post_notice: ['super_admin', 'admin'].includes(user.role || '')
+        };
+
+        // state가 있으면 (Capacitor 앱) — 폴링 결과 저장 + 완료 페이지
+        if (state) {
+            _googleOAuthResults.set(state, { success: true, token, user: userData, createdAt: Date.now() });
+            return res.send('<html><body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;"><div style="text-align:center;"><h2>로그인 완료</h2><p>앱으로 돌아가주세요</p></div></body></html>');
+        }
+
+        // 일반 웹 — 리다이렉트
         res.redirect('/?google_token=' + encodeURIComponent(token)
-            + '&google_user=' + encodeURIComponent(JSON.stringify({
-                id: user.id, email: user.email, name: user.name, role: user.role, status: user.status,
-                profile_image: user.profile_image, org_id: user.org_id, org_name: user.org_name || null,
-                can_post_notice: ['super_admin', 'admin'].includes(user.role || '')
-            })) + '#home');
+            + '&google_user=' + encodeURIComponent(JSON.stringify(userData)) + '#home');
     } catch (error) {
         console.error('Google OAuth callback error:', error);
         res.redirect('/?google_error=server_error#login');
     }
+});
+
+/**
+ * GET /api/auth/google/poll
+ * Capacitor 앱에서 Google OAuth 결과 폴링
+ */
+router.get('/google/poll', (req, res) => {
+    const { state } = req.query;
+    if (!state) return res.json({ pending: true });
+
+    const result = _googleOAuthResults.get(state);
+    if (!result) return res.json({ pending: true });
+
+    // 결과 반환 후 삭제
+    _googleOAuthResults.delete(state);
+    res.json(result);
 });
 
 /**
