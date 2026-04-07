@@ -451,12 +451,12 @@
 
                     <div class="form-group">
                         <label for="signup-ssn-front">
-                            주민등록번호 <span class="required-badge">필수</span>
+                            주민등록번호 <span class="badge-optional">선택</span>
                         </label>
                         <div class="ssn-input-group">
-                            <input type="text" id="signup-ssn-front" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="생년월일 6자리" class="ssn-front" required>
+                            <input type="text" id="signup-ssn-front" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="생년월일 6자리" class="ssn-front">
                             <span class="ssn-separator">-</span>
-                            <input type="password" id="signup-ssn-back" maxlength="1" inputmode="numeric" pattern="[0-9]*" placeholder="●" class="ssn-back" required>
+                            <input type="password" id="signup-ssn-back" maxlength="1" inputmode="numeric" pattern="[0-9]*" placeholder="●" class="ssn-back">
                             <span class="ssn-mask">● ● ● ● ● ●</span>
                         </div>
                         <span class="error-message" id="signup-ssn-error"></span>
@@ -464,7 +464,7 @@
 
                     <div class="form-group">
                         <label for="signup-phone">
-                            휴대폰 <span class="required-badge">필수</span>
+                            휴대폰 <span class="badge-optional">선택</span>
                         </label>
                         <input 
                             type="tel" 
@@ -477,10 +477,10 @@
 
                     <div class="form-group">
                         <label for="signup-address">
-                            주소 <span class="required-badge">필수</span>
+                            주소 <span class="badge-optional">선택</span>
                         </label>
                         <div class="address-input-group">
-                            <input type="text" id="signup-address" placeholder="주소 검색을 눌러주세요" readonly class="address-main" required>
+                            <input type="text" id="signup-address" placeholder="주소 검색을 눌러주세요" readonly class="address-main">
                             <button type="button" class="btn-address-search" onclick="openAddressSearch()">주소 검색</button>
                         </div>
                         <input type="text" id="signup-address-detail" placeholder="상세주소 입력" class="address-detail" style="margin-top: 8px;">
@@ -586,7 +586,7 @@
 
                     <div class="form-group">
                         <div class="form-label-row">
-                            <label>학력 <span class="required-badge">필수</span></label>
+                            <label>학력 <span class="badge-optional">선택</span></label>
                             <button type="button" class="form-add-btn" onclick="addEducationField()">+ 추가</button>
                         </div>
                         <div id="education-list"></div>

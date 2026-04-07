@@ -188,71 +188,46 @@ function validateSignupForm() {
         if (!firstErrorField) firstErrorField = nameEl;
     }
     
-    // 주민등록번호 검증 (분할 입력)
+    // 주민등록번호 검증 (선택사항 — 입력한 경우에만 형식 검증)
     const ssnFront = document.getElementById('signup-ssn-front').value.trim();
     const ssnBack = document.getElementById('signup-ssn-back').value.trim();
-    if (!ssnFront || !ssnBack) {
-        showError('signup-ssn-error', '주민등록번호를 입력하세요.');
-        isValid = false;
-    } else if (ssnFront.length !== 6 || !/^\d{6}$/.test(ssnFront)) {
-        showError('signup-ssn-error', '생년월일 6자리를 정확히 입력하세요.');
-        isValid = false;
-    } else if (ssnBack.length !== 1 || !/^[1-4]$/.test(ssnBack)) {
-        showError('signup-ssn-error', '성별 1자리를 입력하세요 (1~4).');
-        isValid = false;
-    } else {
-        // 날짜 유효성 검증
-        const mm = parseInt(ssnFront.substring(2, 4), 10);
-        const dd = parseInt(ssnFront.substring(4, 6), 10);
-        if (mm < 1 || mm > 12 || dd < 1 || dd > 31) {
-            showError('signup-ssn-error', '유효하지 않은 생년월일입니다.');
+    if (ssnFront || ssnBack) {
+        if (ssnFront.length !== 6 || !/^\d{6}$/.test(ssnFront)) {
+            showError('signup-ssn-error', '생년월일 6자리를 정확히 입력하세요.');
+            isValid = false;
+        } else if (ssnBack.length !== 1 || !/^[1-4]$/.test(ssnBack)) {
+            showError('signup-ssn-error', '성별 1자리를 입력하세요 (1~4).');
             isValid = false;
         } else {
-            // 월별 일수 체크
-            const yy = parseInt(ssnFront.substring(0, 2), 10);
-            const century = (ssnBack === '1' || ssnBack === '2') ? 1900 : 2000;
-            const fullYear = century + yy;
-            const maxDay = new Date(fullYear, mm, 0).getDate();
-            if (dd > maxDay) {
-                showError('signup-ssn-error', `${mm}월은 최대 ${maxDay}일까지입니다.`);
+            const mm = parseInt(ssnFront.substring(2, 4), 10);
+            const dd = parseInt(ssnFront.substring(4, 6), 10);
+            if (mm < 1 || mm > 12 || dd < 1 || dd > 31) {
+                showError('signup-ssn-error', '유효하지 않은 생년월일입니다.');
                 isValid = false;
             }
         }
     }
-    
-    // 휴대폰 검증
-    const phone = document.getElementById('signup-phone').value.trim();
-    if (!phone) {
-        showError('signup-phone-error', '휴대폰 번호를 입력하세요.');
-        isValid = false;
-    }
-    
-    // 주소 검증
-    const address = document.getElementById('signup-address').value.trim();
-    if (!address) {
-        showError('signup-address-error', '주소를 입력하세요.');
-        isValid = false;
-    }
-    
-    // 학력 검증 (최소 1개 필수)
+
+    // 휴대폰 검증 (선택사항)
+    // const phone = document.getElementById('signup-phone').value.trim();
+
+    // 주소 검증 (선택사항)
+    // const address = document.getElementById('signup-address').value.trim();
+
+    // 학력 검증 (선택사항 — 입력한 경우에만 형식 검증)
     const educationItems = document.querySelectorAll('.education-item');
-    if (educationItems.length === 0) {
-        showError('education-error', '최종 학력을 최소 1개 이상 입력하세요.');
-        isValid = false;
-    } else {
-        let hasEmptyEducation = false;
+    if (educationItems.length > 0) {
+        let hasPartialEducation = false;
         educationItems.forEach(item => {
             const school = item.querySelector('.education-school').value.trim();
             const graduation = item.querySelector('.education-graduation').value;
             const status = item.querySelector('.education-status').value;
-            
-            if (!school || !graduation || !status) {
-                hasEmptyEducation = true;
+            if (school && (!graduation || !status)) {
+                hasPartialEducation = true;
             }
         });
-        
-        if (hasEmptyEducation) {
-            showError('education-error', '학력 정보를 모두 입력하세요.');
+        if (hasPartialEducation) {
+            showError('education-error', '학력 정보를 모두 입력하거나 비워두세요.');
             isValid = false;
         }
     }

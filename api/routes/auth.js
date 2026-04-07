@@ -30,11 +30,11 @@ router.post('/signup', async (req, res) => {
         // 소셜 가입 여부 (비밀번호 없이 가입)
         const isSocialSignup = req.body.social_signup === true;
 
-        // 유효성 검증
-        if (!email || !name || !phone || !address) {
+        // 유효성 검증 (이메일, 이름만 필수 — Apple 심사 가이드라인 5.1.1v 준수)
+        if (!email || !name) {
             return res.status(400).json({
                 success: false,
-                message: '필수 항목을 모두 입력해주세요.'
+                message: '이메일과 이름을 입력해주세요.'
             });
         }
 

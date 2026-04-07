@@ -259,15 +259,45 @@ async function initGoogleLogin() {
         if (data.clientId) {
             _googleClientId = data.clientId;
             console.log('Google Login initialized');
+            // 로그인 화면의 Google 버튼에 인라인 렌더링 (팝업 대신 iframe 방식)
+            _renderGoogleButton();
         }
     } catch (_) {
         console.log('Google Login not configured');
     }
 }
 
+function _renderGoogleButton() {
+    if (!_googleClientId || typeof google === 'undefined') return;
+    google.accounts.id.initialize({
+        client_id: _googleClientId,
+        callback: onGoogleCredentialResponse,
+        itp_support: true
+    });
+    // 로그인 화면 버튼
+    var loginBtn = document.getElementById('google-login-btn');
+    if (loginBtn) {
+        loginBtn.innerHTML = '';
+        loginBtn.style.padding = '0';
+        loginBtn.style.border = 'none';
+        loginBtn.style.background = 'none';
+        loginBtn.onclick = null;
+        google.accounts.id.renderButton(loginBtn, {
+            theme: 'outline', size: 'large', text: 'signin_with', width: loginBtn.offsetWidth || 350, locale: 'ko'
+        });
+    }
+}
+
+// Google SDK 로드 완료 후 재렌더링
+if (typeof window !== 'undefined') {
+    window.addEventListener('load', function() {
+        setTimeout(_renderGoogleButton, 1000);
+    });
+}
+
 async function handleGoogleLogin() {
+    // renderButton이 이미 처리하므로 fallback으로만 사용
     if (!_googleClientId) {
-        // Client ID 미설정 시 재시도
         await initGoogleLogin();
         if (!_googleClientId) {
             var errEl = document.getElementById('inline-error');
@@ -275,24 +305,7 @@ async function handleGoogleLogin() {
             return;
         }
     }
-
-    // Google One Tap / popup 방식
-    google.accounts.id.initialize({
-        client_id: _googleClientId,
-        callback: onGoogleCredentialResponse
-    });
-    google.accounts.id.prompt(function(notification) {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            // One Tap 안 되면 팝업으로 fallback
-            google.accounts.id.renderButton(
-                document.getElementById('google-login-btn'),
-                { theme: 'outline', size: 'large', text: 'signin_with', width: '100%' }
-            );
-            // 버튼 자동 클릭
-            var gBtn = document.querySelector('#google-login-btn div[role="button"]');
-            if (gBtn) gBtn.click();
-        }
-    });
+    _renderGoogleButton();
 }
 
 async function onGoogleCredentialResponse(response) {
@@ -368,18 +381,18 @@ async function handleAppleLogin() {
     if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); }
 
     try {
-        // Apple Sign In JS SDK 사용
+        // Apple Sign In — 리다이렉트 방식 (앱 내 WebView에서 동작)
         AppleID.auth.init({
             clientId: _appleClientId,
             scope: 'name email',
             redirectURI: _appleRedirectUri,
-            usePopup: true
+            usePopup: false
         });
 
-        var response = await AppleID.auth.signIn();
-        await onAppleLoginResponse(response);
+        AppleID.auth.signIn();
+        // 리다이렉트 방식이므로 여기서 페이지가 이동됨
+        // 콜백 처리는 checkAppleCallback()에서 수행
     } catch (error) {
-        // 사용자가 취소한 경우
         if (error.error === 'popup_closed_by_user' || error.error === 'user_cancelled_authorize') {
             return;
         }
@@ -443,12 +456,31 @@ function checkAppleCallback() {
         var appleUser = params.get('apple_user');
         var userData = null;
         try { if (appleUser) userData = JSON.parse(decodeURIComponent(appleUser)); } catch (_) {}
+
+        var isSignupMode = localStorage.getItem('apple_signup_mode') === 'true';
+        localStorage.removeItem('apple_signup_mode');
+
         // URL 파라미터 제거
-        window.history.replaceState({}, '', window.location.pathname + '#login');
-        onAppleLoginResponse({
-            authorization: { id_token: appleIdToken },
-            user: userData
-        });
+        window.history.replaceState({}, '', window.location.pathname + (isSignupMode ? '#signup' : '#login'));
+
+        if (isSignupMode) {
+            // 회원가입 폼에 이메일/이름 자동입력
+            try {
+                var parts = appleIdToken.split('.');
+                var payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+                var appleEmail = (payload.email || '').toLowerCase();
+                var appleName = (userData && userData.name)
+                    ? ((userData.name.lastName || '') + (userData.name.firstName || '')).trim()
+                    : '';
+                goToSignupWithSocial(appleEmail, appleName);
+            } catch (e) { console.error('Apple signup parse error:', e); }
+        } else {
+            // 로그인 처리
+            onAppleLoginResponse({
+                authorization: { id_token: appleIdToken },
+                user: userData
+            });
+        }
     }
 }
 
@@ -559,10 +591,14 @@ async function socialSignupFill(provider) {
                 clientId: _appleClientId,
                 scope: 'name email',
                 redirectURI: _appleRedirectUri,
-                usePopup: true
+                usePopup: false
             });
-            var response = await AppleID.auth.signIn();
-            var idToken = response.authorization && response.authorization.id_token;
+            // 리다이렉트 방식 — 회원가입 폼에서도 동일하게 처리
+            // 콜백에서 signup 플래그로 회원가입 폼으로 돌아옴
+            localStorage.setItem('apple_signup_mode', 'true');
+            AppleID.auth.signIn();
+            return; // 리다이렉트 발생
+            var idToken = ''; // 아래 코드는 리다이렉트 후 실행 안 됨
             if (idToken) {
                 var parts = idToken.split('.');
                 var payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
