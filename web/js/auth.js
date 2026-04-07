@@ -266,46 +266,8 @@ async function initGoogleLogin() {
 }
 
 async function handleGoogleLogin() {
-    if (!_googleClientId) {
-        await initGoogleLogin();
-        if (!_googleClientId) {
-            var errEl = document.getElementById('inline-error');
-            if (errEl) { errEl.textContent = 'Google 로그인이 아직 설정되지 않았습니다.'; errEl.classList.add('show'); }
-            return;
-        }
-    }
-
-    if (typeof google === 'undefined' || !google.accounts) {
-        var errEl = document.getElementById('inline-error');
-        if (errEl) { errEl.textContent = 'Google 로그인을 불러오는 중입니다. 잠시 후 다시 시도해주세요.'; errEl.classList.add('show'); }
-        return;
-    }
-
-    google.accounts.id.initialize({
-        client_id: _googleClientId,
-        callback: onGoogleCredentialResponse,
-        itp_support: true
-    });
-
-    // 먼저 One Tap 시도, 안 되면 버튼 렌더 + 자동 클릭
-    google.accounts.id.prompt(function(notification) {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            // One Tap 불가 — 버튼 렌더링 후 자동 클릭
-            var container = document.getElementById('google-login-btn');
-            if (container) {
-                var tempDiv = document.createElement('div');
-                tempDiv.id = 'g-signin-temp';
-                tempDiv.style.cssText = 'position:absolute;opacity:0;pointer-events:none;';
-                container.parentNode.insertBefore(tempDiv, container.nextSibling);
-                google.accounts.id.renderButton(tempDiv, { theme: 'outline', size: 'large' });
-                setTimeout(function() {
-                    var gBtn = tempDiv.querySelector('div[role="button"]');
-                    if (gBtn) gBtn.click();
-                    setTimeout(function() { if (tempDiv.parentNode) tempDiv.parentNode.removeChild(tempDiv); }, 5000);
-                }, 300);
-            }
-        }
-    });
+    // 서버 OAuth 리다이렉트 방식 — 모든 WebView에서 작동
+    window.location.href = '/api/auth/google/redirect';
 }
 
 async function onGoogleCredentialResponse(response) {
@@ -484,6 +446,55 @@ function checkAppleCallback() {
     }
 }
 
+/**
+ * Google OAuth 리다이렉트 콜백 처리
+ */
+function checkGoogleCallback() {
+    var params = new URLSearchParams(window.location.search);
+
+    // 로그인 성공
+    var googleToken = params.get('google_token');
+    if (googleToken) {
+        var googleUser = params.get('google_user');
+        try {
+            var userData = JSON.parse(decodeURIComponent(googleUser));
+            apiClient.setToken(googleToken);
+            currentUser = userData;
+            localStorage.setItem('auth_token', googleToken);
+            localStorage.setItem('user_info', googleUser);
+            if (['super_admin'].includes(userData.role)) {
+                localStorage.setItem('admin_token', googleToken);
+            }
+        } catch (e) { console.error('Google callback parse error:', e); }
+        window.history.replaceState({}, '', '/');
+        setTimeout(function() { navigateToScreen('home'); }, 100);
+        return;
+    }
+
+    // 미가입 → 회원가입
+    var signupEmail = params.get('google_signup_email');
+    if (signupEmail) {
+        var signupName = params.get('google_signup_name') || '';
+        window.history.replaceState({}, '', '/#signup');
+        setTimeout(function() { goToSignupWithSocial(signupEmail, signupName); }, 300);
+        return;
+    }
+
+    // 에러
+    var googleError = params.get('google_error');
+    if (googleError) {
+        window.history.replaceState({}, '', '/#login');
+        var errEl = document.getElementById('inline-error');
+        if (errEl) {
+            var msg = googleError === 'pending' ? '승인 대기 중입니다.' :
+                      googleError === 'suspended' ? '정지된 계정입니다.' :
+                      'Google 로그인에 실패했습니다.';
+            errEl.textContent = msg;
+            errEl.classList.add('show');
+        }
+    }
+}
+
 // ========== 소셜 회원가입 (이메일/이름 자동입력) ==========
 
 /**
@@ -633,6 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initGoogleLogin();
         initAppleLogin();
         checkAppleCallback();
+        checkGoogleCallback();
     }
 
     // 비밀번호 토글 (signup-link, logout-btn은 navigation.js의 setupSignupEvents에서 등록)

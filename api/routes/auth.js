@@ -396,6 +396,93 @@ router.post('/google', async (req, res) => {
 });
 
 /**
+ * GET /api/auth/google/redirect
+ * Google OAuth 리다이렉트 방식 (WebView 호환)
+ */
+router.get('/google/redirect', (req, res) => {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) return res.status(500).send('Google Client ID not configured');
+
+    const redirectUri = (process.env.BASE_URL || 'https://jc-production-7db6.up.railway.app') + '/api/auth/google/callback';
+    const scope = 'openid email profile';
+    const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
+        + '?client_id=' + encodeURIComponent(clientId)
+        + '&redirect_uri=' + encodeURIComponent(redirectUri)
+        + '&response_type=code'
+        + '&scope=' + encodeURIComponent(scope)
+        + '&prompt=select_account';
+
+    res.redirect(authUrl);
+});
+
+/**
+ * GET /api/auth/google/callback
+ * Google OAuth 콜백
+ */
+router.get('/google/callback', async (req, res) => {
+    try {
+        const { code } = req.query;
+        if (!code) return res.redirect('/?google_error=no_code#login');
+
+        const clientId = process.env.GOOGLE_CLIENT_ID;
+        const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+        const redirectUri = (process.env.BASE_URL || 'https://jc-production-7db6.up.railway.app') + '/api/auth/google/callback';
+
+        const https = require('https');
+        const tokenData = await new Promise((resolve, reject) => {
+            const postData = 'code=' + encodeURIComponent(code)
+                + '&client_id=' + encodeURIComponent(clientId)
+                + '&client_secret=' + encodeURIComponent(clientSecret || '')
+                + '&redirect_uri=' + encodeURIComponent(redirectUri)
+                + '&grant_type=authorization_code';
+
+            const req2 = https.request({
+                hostname: 'oauth2.googleapis.com', path: '/token', method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            }, (response) => {
+                let data = '';
+                response.on('data', chunk => data += chunk);
+                response.on('end', () => { try { resolve(JSON.parse(data)); } catch (e) { reject(e); } });
+            });
+            req2.on('error', reject);
+            req2.write(postData);
+            req2.end();
+        });
+
+        if (!tokenData.id_token) return res.redirect('/?google_error=token_failed#login');
+
+        const parts = tokenData.id_token.split('.');
+        const payload = JSON.parse(Buffer.from(parts[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf-8'));
+        const googleEmail = (payload.email || '').toLowerCase();
+        const googleName = payload.name || '';
+
+        if (!googleEmail) return res.redirect('/?google_error=no_email#login');
+
+        const result = await query(
+            `SELECT u.id, u.email, u.name, u.role, u.status, u.profile_image, u.org_id, o.name as org_name
+             FROM users u LEFT JOIN organizations o ON o.id = u.org_id WHERE u.email = $1`, [googleEmail]);
+
+        if (result.rows.length === 0) {
+            return res.redirect('/?google_signup_email=' + encodeURIComponent(googleEmail) + '&google_signup_name=' + encodeURIComponent(googleName) + '#signup');
+        }
+
+        const user = result.rows[0];
+        if (user.status !== 'active') return res.redirect('/?google_error=' + user.status + '#login');
+
+        const token = generateToken(user.id, user.email, user.role);
+        res.redirect('/?google_token=' + encodeURIComponent(token)
+            + '&google_user=' + encodeURIComponent(JSON.stringify({
+                id: user.id, email: user.email, name: user.name, role: user.role, status: user.status,
+                profile_image: user.profile_image, org_id: user.org_id, org_name: user.org_name || null,
+                can_post_notice: ['super_admin', 'admin'].includes(user.role || '')
+            })) + '#home');
+    } catch (error) {
+        console.error('Google OAuth callback error:', error);
+        res.redirect('/?google_error=server_error#login');
+    }
+});
+
+/**
  * POST /api/auth/apple
  * Apple 로그인 (Sign in with Apple)
  * - Apple ID Token을 받아 검증 후 기존 회원이면 JWT 발급
