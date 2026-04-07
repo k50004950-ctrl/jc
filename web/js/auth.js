@@ -259,44 +259,13 @@ async function initGoogleLogin() {
         if (data.clientId) {
             _googleClientId = data.clientId;
             console.log('Google Login initialized');
-            // 로그인 화면의 Google 버튼에 인라인 렌더링 (팝업 대신 iframe 방식)
-            _renderGoogleButton();
         }
     } catch (_) {
         console.log('Google Login not configured');
     }
 }
 
-function _renderGoogleButton() {
-    if (!_googleClientId || typeof google === 'undefined') return;
-    google.accounts.id.initialize({
-        client_id: _googleClientId,
-        callback: onGoogleCredentialResponse,
-        itp_support: true
-    });
-    // 로그인 화면 버튼
-    var loginBtn = document.getElementById('google-login-btn');
-    if (loginBtn) {
-        loginBtn.innerHTML = '';
-        loginBtn.style.padding = '0';
-        loginBtn.style.border = 'none';
-        loginBtn.style.background = 'none';
-        loginBtn.onclick = null;
-        google.accounts.id.renderButton(loginBtn, {
-            theme: 'outline', size: 'large', text: 'signin_with', width: loginBtn.offsetWidth || 350, locale: 'ko'
-        });
-    }
-}
-
-// Google SDK 로드 완료 후 재렌더링
-if (typeof window !== 'undefined') {
-    window.addEventListener('load', function() {
-        setTimeout(_renderGoogleButton, 1000);
-    });
-}
-
 async function handleGoogleLogin() {
-    // renderButton이 이미 처리하므로 fallback으로만 사용
     if (!_googleClientId) {
         await initGoogleLogin();
         if (!_googleClientId) {
@@ -305,7 +274,38 @@ async function handleGoogleLogin() {
             return;
         }
     }
-    _renderGoogleButton();
+
+    if (typeof google === 'undefined' || !google.accounts) {
+        var errEl = document.getElementById('inline-error');
+        if (errEl) { errEl.textContent = 'Google 로그인을 불러오는 중입니다. 잠시 후 다시 시도해주세요.'; errEl.classList.add('show'); }
+        return;
+    }
+
+    google.accounts.id.initialize({
+        client_id: _googleClientId,
+        callback: onGoogleCredentialResponse,
+        itp_support: true
+    });
+
+    // 먼저 One Tap 시도, 안 되면 버튼 렌더 + 자동 클릭
+    google.accounts.id.prompt(function(notification) {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            // One Tap 불가 — 버튼 렌더링 후 자동 클릭
+            var container = document.getElementById('google-login-btn');
+            if (container) {
+                var tempDiv = document.createElement('div');
+                tempDiv.id = 'g-signin-temp';
+                tempDiv.style.cssText = 'position:absolute;opacity:0;pointer-events:none;';
+                container.parentNode.insertBefore(tempDiv, container.nextSibling);
+                google.accounts.id.renderButton(tempDiv, { theme: 'outline', size: 'large' });
+                setTimeout(function() {
+                    var gBtn = tempDiv.querySelector('div[role="button"]');
+                    if (gBtn) gBtn.click();
+                    setTimeout(function() { if (tempDiv.parentNode) tempDiv.parentNode.removeChild(tempDiv); }, 5000);
+                }, 300);
+            }
+        }
+    });
 }
 
 async function onGoogleCredentialResponse(response) {
