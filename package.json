@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/k50004950-ctrl/jc#readme",
   "dependencies": {
+    "@capacitor/android": "^8.3.0",
     "@capacitor/cli": "^8.3.0",
     "@capacitor/core": "^8.3.0",
     "@capacitor/ios": "^8.3.0"
