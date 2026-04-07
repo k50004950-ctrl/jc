@@ -565,10 +565,11 @@ router.post('/apple', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Apple 인증이 만료되었습니다.' });
         }
 
-        // Apple Service ID (Client ID) 검증
-        const appleClientId = process.env.APPLE_CLIENT_ID;
-        if (appleClientId && payload.aud !== appleClientId) {
-            return res.status(401).json({ success: false, message: 'Apple Client ID가 일치하지 않습니다.' });
+        // Apple Client ID 검증 (Service ID 또는 번들 ID 둘 다 허용)
+        const appleClientId = process.env.APPLE_CLIENT_ID; // com.ydpjc.app.web
+        const appleBundleId = 'com.ydpjc.app'; // 네이티브 앱 번들 ID
+        if (appleClientId && payload.aud !== appleClientId && payload.aud !== appleBundleId) {
+            return res.status(401).json({ success: false, message: 'Apple Client ID가 일치하지 않습니다. aud=' + payload.aud });
         }
 
         const appleEmail = (payload.email || '').toLowerCase();
@@ -649,14 +650,59 @@ router.get('/apple-client-id', (req, res) => {
 
 /**
  * POST /api/auth/apple/callback
- * Apple Sign In 콜백 (리다이렉트 방식 대응)
+ * Apple Sign In 콜백 — 서버에서 직접 로그인 처리 후 리다이렉트
  */
-router.post('/apple/callback', (req, res) => {
-    // Apple은 form POST로 콜백을 보냄
-    const { id_token, user } = req.body;
-    // 프론트엔드로 리다이렉트하면서 토큰 전달
-    const userData = user ? encodeURIComponent(user) : '';
-    res.redirect(`/?apple_id_token=${encodeURIComponent(id_token || '')}&apple_user=${userData}#login`);
+router.post('/apple/callback', async (req, res) => {
+    try {
+        const { id_token, user: appleUserStr } = req.body;
+        if (!id_token) return res.redirect('/?apple_error=no_token#login');
+
+        // ID Token 디코딩
+        const parts = id_token.split('.');
+        if (parts.length !== 3) return res.redirect('/?apple_error=invalid_token#login');
+
+        const payloadBase64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(Buffer.from(payloadBase64, 'base64').toString('utf-8'));
+
+        if (payload.iss !== 'https://appleid.apple.com') return res.redirect('/?apple_error=invalid_issuer#login');
+
+        const appleEmail = (payload.email || '').toLowerCase();
+        let appleName = '';
+        try {
+            if (appleUserStr) {
+                const appleUser = JSON.parse(appleUserStr);
+                if (appleUser.name) appleName = ((appleUser.name.lastName || '') + (appleUser.name.firstName || '')).trim();
+            }
+        } catch (_) {}
+
+        if (!appleEmail) return res.redirect('/?apple_error=no_email#login');
+
+        // 기존 회원 조회
+        const result = await query(
+            `SELECT u.id, u.email, u.name, u.role, u.status, u.profile_image, u.org_id, o.name as org_name
+             FROM users u LEFT JOIN organizations o ON o.id = u.org_id WHERE u.email = $1`, [appleEmail]);
+
+        if (result.rows.length === 0) {
+            return res.redirect('/?google_signup_email=' + encodeURIComponent(appleEmail) + '&google_signup_name=' + encodeURIComponent(appleName) + '#signup');
+        }
+
+        const user = result.rows[0];
+        if (user.status !== 'active') return res.redirect('/?apple_error=' + user.status + '#login');
+
+        const token = generateToken(user.id, user.email, user.role);
+        const userData = {
+            id: user.id, email: user.email, name: user.name, role: user.role, status: user.status,
+            profile_image: user.profile_image, org_id: user.org_id, org_name: user.org_name || null,
+            can_post_notice: ['super_admin', 'admin'].includes(user.role || '')
+        };
+
+        // 프론트엔드로 토큰 전달 (Google과 같은 방식)
+        res.redirect('/?google_token=' + encodeURIComponent(token)
+            + '&google_user=' + encodeURIComponent(JSON.stringify(userData)) + '#home');
+    } catch (error) {
+        console.error('Apple callback error:', error);
+        res.redirect('/?apple_error=server_error#login');
+    }
 });
 
 /**

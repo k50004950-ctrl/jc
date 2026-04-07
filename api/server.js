@@ -48,7 +48,10 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
 app.use(cors({
     origin: function (origin, callback) {
         // 같은 오리진 요청(origin이 없는 경우) 또는 허용된 오리진
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Capacitor 앱: capacitor://localhost, ionic://localhost, http://localhost
+        if (!origin || allowedOrigins.includes(origin)
+            || origin.startsWith('capacitor://') || origin.startsWith('ionic://')
+            || origin === 'http://localhost') {
             callback(null, true);
         } else {
             console.warn('CORS 차단:', origin);
