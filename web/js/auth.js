@@ -266,54 +266,65 @@ async function initGoogleLogin() {
 }
 
 async function handleGoogleLogin() {
-    // Capacitor 앱 내에서는 Chrome Custom Tab 사용 (Google이 WebView OAuth 차단)
+    var baseUrl = window.location.origin || 'https://jc-production-7db6.up.railway.app';
+    var state = 'gstate_' + Math.random().toString(36).substring(2);
+    var googleRedirectUrl = baseUrl + '/api/auth/google/redirect?state=' + state;
+
+    // Capacitor 앱 — Chrome Custom Tab으로 열기 (Google이 WebView 차단)
     if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+        localStorage.setItem('google_oauth_state', state);
+
+        // Capacitor Browser 플러그인 시도
+        var opened = false;
         try {
             var Browser = window.Capacitor.Plugins.Browser;
-            if (Browser) {
-                // 상태 토큰 생성 (폴링용)
-                var state = 'gstate_' + Math.random().toString(36).substring(2);
-                localStorage.setItem('google_oauth_state', state);
-                await Browser.open({ url: '/api/auth/google/redirect?state=' + state });
-
-                // 브라우저가 닫히면 서버에서 토큰 폴링
-                var pollInterval = setInterval(async function() {
-                    try {
-                        var resp = await fetch('/api/auth/google/poll?state=' + state);
-                        var data = await resp.json();
-                        if (data.success && data.token) {
-                            clearInterval(pollInterval);
-                            localStorage.removeItem('google_oauth_state');
-                            try { await Browser.close(); } catch(_) {}
-
-                            apiClient.setToken(data.token);
-                            currentUser = data.user;
-                            localStorage.setItem('auth_token', data.token);
-                            localStorage.setItem('user_info', JSON.stringify(data.user));
-                            if (['super_admin'].includes(data.user.role)) {
-                                localStorage.setItem('admin_token', data.token);
-                            }
-                            navigateToScreen('home');
-                        } else if (data.signup) {
-                            clearInterval(pollInterval);
-                            localStorage.removeItem('google_oauth_state');
-                            try { await Browser.close(); } catch(_) {}
-                            goToSignupWithSocial(data.email, data.name);
-                        }
-                    } catch(_) {}
-                }, 1500);
-
-                // 60초 후 폴링 중단
-                setTimeout(function() { clearInterval(pollInterval); }, 60000);
-                return;
+            if (Browser && Browser.open) {
+                await Browser.open({ url: googleRedirectUrl, windowName: '_blank' });
+                opened = true;
             }
         } catch (e) {
-            console.error('Capacitor Browser error:', e);
+            console.log('Capacitor Browser not available:', e);
         }
+
+        // Browser 플러그인 없으면 시스템 브라우저로 열기
+        if (!opened) {
+            window.open(googleRedirectUrl, '_system');
+        }
+
+        // 서버에서 토큰 폴링 (1.5초 간격, 최대 90초)
+        var pollCount = 0;
+        var pollInterval = setInterval(async function() {
+            pollCount++;
+            if (pollCount > 60) { clearInterval(pollInterval); return; }
+            try {
+                var resp = await fetch(baseUrl + '/api/auth/google/poll?state=' + state);
+                var data = await resp.json();
+                if (data.success && data.token) {
+                    clearInterval(pollInterval);
+                    localStorage.removeItem('google_oauth_state');
+                    try { var B = window.Capacitor.Plugins.Browser; if (B && B.close) await B.close(); } catch(_) {}
+
+                    apiClient.setToken(data.token);
+                    currentUser = data.user;
+                    localStorage.setItem('auth_token', data.token);
+                    localStorage.setItem('user_info', JSON.stringify(data.user));
+                    if (['super_admin'].includes(data.user.role)) {
+                        localStorage.setItem('admin_token', data.token);
+                    }
+                    navigateToScreen('home');
+                } else if (data.signup) {
+                    clearInterval(pollInterval);
+                    localStorage.removeItem('google_oauth_state');
+                    try { var B = window.Capacitor.Plugins.Browser; if (B && B.close) await B.close(); } catch(_) {}
+                    goToSignupWithSocial(data.email, data.name);
+                }
+            } catch(_) {}
+        }, 1500);
+        return;
     }
 
     // 일반 웹 브라우저 — 리다이렉트 방식
-    window.location.href = '/api/auth/google/redirect';
+    window.location.href = googleRedirectUrl;
 }
 
 async function onGoogleCredentialResponse(response) {
