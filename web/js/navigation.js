@@ -84,7 +84,7 @@ var _navStack = []; // 네비게이션 스택 — forward/back 방향 판단용
 var _screenCache = {}; // 화면 캐싱 — 뒤로가기 시 깜빡임 방지
 
 // 목록 화면 = 스택 초기화 대상 (탭 네비로 이동 시)
-var _tabScreens = ['home', 'posts', 'schedules', 'members', 'meetings', 'profile'];
+var _tabScreens = ['home', 'posts', 'schedules', 'members', 'mypage', 'profile'];
 
 var _routes = {
     'home':         { nav: 'home',      showNav: true,  init: function() { if (typeof updateUserDisplay === 'function') updateUserDisplay(); loadHomeData(); updateNavBadges(); } },
@@ -95,6 +95,7 @@ var _routes = {
     },
     'members':      { nav: 'members',   showNav: true,  init: function() { if (typeof loadMembersScreen === 'function') loadMembersScreen(); } },
     'meetings':     { nav: 'meetings',  showNav: true,  init: function() { if (typeof loadMeetingsScreen === 'function') loadMeetingsScreen(); } },
+    'mypage':       { nav: 'mypage',    showNav: true,  init: function() { if (typeof loadMyPageData === 'function') loadMyPageData(); } },
     'profile':      { nav: 'profile',   showNav: true,  init: function() { if (typeof loadProfile === 'function') loadProfile(); } },
     'login':        { noHistory: true, init: function() { var f = document.getElementById('login-form'); if (f) f.reset(); clearAllErrors(); setTimeout(function() { var el = document.getElementById('login-email'); if (el) el.focus(); }, 100); } },
     'signup':       { noHistory: true, init: function() { var f = document.getElementById('signup-form'); if (f) f.reset(); clearAllErrors(); setTimeout(function() { var el = document.getElementById('signup-org'); if (el) el.focus(); }, 100); } },

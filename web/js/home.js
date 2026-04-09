@@ -16,6 +16,14 @@ async function loadHomeData() {
     var titleEl = document.querySelector('#home-screen .app-bar-title');
     if (titleEl) titleEl.textContent = getOrgName();
 
+    // 인사말 업데이트
+    var greetingEl = document.getElementById('home-greeting');
+    if (greetingEl) {
+        var user = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : JSON.parse(localStorage.getItem('user_info') || 'null');
+        var userName = (user && user.name) ? user.name : '회원';
+        greetingEl.innerHTML = '<h2 style="font-size:24px;font-weight:700;color:var(--text-primary);">' + userName + '님, 안녕하세요!</h2>';
+    }
+
     try {
         // 공지사항 요약 로드
         await loadNoticeSummary();
