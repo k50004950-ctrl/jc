@@ -330,8 +330,8 @@ async function handleGoogleLogin() {
         return;
     }
 
-    // 일반 웹 브라우저 — 리다이렉트 방식
-    window.location.href = googleRedirectUrl;
+    // 일반 웹 브라우저 — state 없이 리다이렉트 (서버가 직접 토큰으로 리다이렉트)
+    window.location.href = baseUrl + '/api/auth/google/redirect';
 }
 
 async function onGoogleCredentialResponse(response) {
