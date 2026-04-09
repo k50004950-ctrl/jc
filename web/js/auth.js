@@ -703,12 +703,14 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.addEventListener('submit', handleLogin);
     }
 
+    // OAuth 콜백 먼저 처리 (URL에 토큰 파라미터가 있으면 로그인 처리)
+    checkGoogleCallback();
+    checkAppleCallback();
+
     // 로그인 안 된 상태에서만 소셜 로그인 초기화
     if (!localStorage.getItem('auth_token')) {
         initGoogleLogin();
         initAppleLogin();
-        checkAppleCallback();
-        checkGoogleCallback();
     }
 
     // 비밀번호 토글 (signup-link, logout-btn은 navigation.js의 setupSignupEvents에서 등록)
