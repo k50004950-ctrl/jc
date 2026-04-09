@@ -274,22 +274,15 @@ async function handleGoogleLogin() {
     if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
         localStorage.setItem('google_oauth_state', state);
 
-        // Capacitor Browser 플러그인 시도
-        var opened = false;
-        try {
-            var Browser = window.Capacitor.Plugins.Browser;
-            if (Browser && Browser.open) {
-                await Browser.open({ url: googleRedirectUrl, windowName: '_blank' });
-                opened = true;
-            }
-        } catch (e) {
-            console.log('Capacitor Browser not available:', e);
-        }
-
-        // Browser 플러그인 없으면 시스템 브라우저로 열기
-        if (!opened) {
-            window.open(googleRedirectUrl, '_system');
-        }
+        // 시스템 브라우저(Chrome)로 열기 — Google이 WebView 차단하므로 필수
+        // _blank 링크는 Capacitor가 allowNavigation에 없는 도메인을 외부 브라우저로 열음
+        var a = document.createElement('a');
+        a.href = googleRedirectUrl;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
 
         // 서버에서 토큰 폴링 (1.5초 간격, 최대 90초)
         var pollCount = 0;

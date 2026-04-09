@@ -6,13 +6,6 @@
     "url": "https://jc-production-7db6.up.railway.app",
     "cleartext": false,
     "allowNavigation": [
-      "*.google.com",
-      "*.googleapis.com",
-      "*.gstatic.com",
-      "accounts.google.com",
-      "oauth2.googleapis.com",
-      "appleid.apple.com",
-      "*.apple.com",
       "jc-production-7db6.up.railway.app"
     ]
   },
