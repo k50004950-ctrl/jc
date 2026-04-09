@@ -274,15 +274,29 @@ async function handleGoogleLogin() {
     if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
         localStorage.setItem('google_oauth_state', state);
 
-        // 시스템 브라우저(Chrome)로 열기 — Google이 WebView 차단하므로 필수
-        // _blank 링크는 Capacitor가 allowNavigation에 없는 도메인을 외부 브라우저로 열음
-        var a = document.createElement('a');
-        a.href = googleRedirectUrl;
-        a.target = '_blank';
-        a.rel = 'noopener';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        // Chrome Custom Tab (Android) / SFSafariViewController (iOS)로 열기
+        // Google이 WebView 차단 + Apple이 외부 브라우저 리젝하므로 이 방식 필수
+        try {
+            // 방법 1: Capacitor Browser 플러그인
+            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser) {
+                await window.Capacitor.Plugins.Browser.open({ url: googleRedirectUrl });
+            }
+            // 방법 2: Capacitor 글로벌 (v5+)
+            else if (window.CapacitorBrowser) {
+                await window.CapacitorBrowser.open({ url: googleRedirectUrl });
+            }
+            // 방법 3: 직접 네이티브 호출
+            else if (window.Capacitor && window.Capacitor.nativeCallback) {
+                window.Capacitor.nativeCallback('Browser', 'open', { url: googleRedirectUrl });
+            }
+            // 방법 4: 최후 fallback — _blank
+            else {
+                window.open(googleRedirectUrl, '_blank');
+            }
+        } catch (e) {
+            console.error('Browser open error:', e);
+            window.open(googleRedirectUrl, '_blank');
+        }
 
         // 서버에서 토큰 폴링 (1.5초 간격, 최대 90초)
         var pollCount = 0;
