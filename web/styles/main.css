@@ -31,10 +31,10 @@
     --bg-secondary: #F9FAFB;
     --text-primary: #111827;
     --text-secondary: #4B5563;  /* WCAG AA: 7:1 on white */
-    --text-hint: #9CA3AF;      /* JC Pro matching */
+    --text-hint: #6B7280;      /* WCAG AA: 5.0:1 on white */
     --text-disabled: #D1D5DB;
     --text-muted: #6B7280;  /* WCAG AA: 5.0:1 on white (기존 #9CA3AF은 3.2:1 미달) */
-    --border-color: #D1D5DB;
+    --border-color: #E5E7EB;
     --border-light: #F3F4F6;
     --neutral-bg: #F3F4F6;
     --purple-bg: #F3E8FF;
@@ -226,14 +226,14 @@ html {
 
 /* ==================== 앱바 — v2.0 흰색 배경 + border ==================== */
 .app-bar {
-    height: 56px;
+    height: var(--appbar-height);
     background: var(--appbar-bg);
     color: var(--appbar-text);
-    padding: 0 16px;
+    padding: 0 12px;
     display: flex;
     align-items: center;
     gap: 8px;
-    border-bottom: none;
+    border-bottom: 1px solid var(--appbar-border);
     box-shadow: none;
     position: sticky;
     top: 0;
@@ -241,11 +241,10 @@ html {
 }
 
 .app-bar-title {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 600;
     flex: 1;
     color: var(--text-primary);
-    line-height: 1.4;
 }
 
 .back-button,
@@ -953,7 +952,7 @@ input::-ms-clear {
 
 /* ==================== 홈 화면 ==================== */
 .home-content {
-    padding: 0;
+    padding: 4px 0;
 }
 
 .welcome-section {
@@ -1020,15 +1019,14 @@ input::-ms-clear {
     display: flex;
     background: var(--background-color);
     border-top: 1px solid var(--border-color);
-    padding: 4px 0 0;
+    padding: var(--spacing-xs) 0;
     padding-bottom: env(safe-area-inset-bottom, 0px);
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    min-height: 64px;
+    min-height: 56px;
     z-index: 9999;
-    box-shadow: 0 -1px 3px rgba(0,0,0,0.04);
 }
 
 .nav-item {
@@ -1038,8 +1036,8 @@ input::-ms-clear {
     align-items: center;
     justify-content: center;
     gap: 4px;
-    padding: 6px 4px;
-    min-height: 56px;
+    padding: var(--spacing-xs);
+    min-height: 48px;
     background: none;
     border: none;
     cursor: pointer;
@@ -1047,28 +1045,22 @@ input::-ms-clear {
     font-family: var(--font-family);
     transition: var(--transition);
     position: relative;
-    -webkit-tap-highlight-color: transparent;
 }
 
 .nav-item:hover {
-    background-color: transparent;
+    background-color: var(--background-color);
 }
 
 .nav-item.active {
     color: var(--primary-color);
 }
 
-.nav-item.active .nav-icon {
-    background: rgba(37, 99, 235, 0.12);
-    border-radius: 16px;
-    padding: 4px 16px;
-}
-
 .nav-icon {
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.25s ease;
 }
 
 .nav-icon svg {
@@ -1224,60 +1216,20 @@ input::-ms-clear {
 
 /* ==================== 콘텐츠 섹션 ==================== */
 .content-section {
-    margin-bottom: 8px;
-    padding: 0 24px;
-}
-
-/* 스켈레톤 로딩 카드 (JC Pro 스타일) */
-.skeleton-card {
-    padding: 16px;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    margin-bottom: 8px;
-}
-.skeleton-card .skeleton-line {
-    height: 16px;
-    background: var(--border-color);
-    border-radius: 8px;
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 8px;
-}
-.skeleton-card .skeleton-line:last-child { margin-bottom: 0; }
-.skeleton-card .skeleton-line--title { width: 65%; height: 18px; }
-.skeleton-card .skeleton-line--sub { width: 100%; height: 14px; }
-.skeleton-card .skeleton-line--meta { width: 40%; height: 12px; }
-.skeleton-card .skeleton-line::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
-    animation: shimmer 1.2s infinite ease-in-out;
+    margin-bottom: 6px;
 }
 
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
-    padding: 8px 0;
+    margin-bottom: 4px;
 }
 
 .section-header h2 {
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    line-height: 1.4;
-}
-
-.section-header h2 .section-icon {
-    width: 20px;
-    height: 20px;
-    color: var(--primary-color);
-    flex-shrink: 0;
 }
 
 .view-all-btn {
@@ -1287,17 +1239,13 @@ input::-ms-clear {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    padding: 8px;
+    padding: var(--spacing-xs);
     font-family: var(--font-family);
     transition: var(--transition);
-    border-radius: 4px;
-    min-height: 48px;
-    display: flex;
-    align-items: center;
 }
 
 .view-all-btn:hover {
-    background: var(--primary-light);
+    text-decoration: underline;
 }
 
 /* ==================== 카드 스타일 ==================== */
@@ -3833,40 +3781,28 @@ input[type="date"]:focus {
 .home-schedule-card {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 16px;
+    gap: 8px;
+    padding: 6px 10px;
     background: var(--background-color);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    margin-bottom: 8px;
+    border-radius: 8px;
+    margin-bottom: 3px;
     cursor: pointer;
     transition: var(--transition);
     position: relative;
 }
 
-.home-schedule-card:active {
-    background: var(--bg-secondary);
+.home-schedule-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-color: var(--primary-color);
 }
-
-.home-schedule-dot {
-    flex-shrink: 0;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--primary-color);
-}
-.home-schedule-dot[data-category="meeting"] { background: #10B981; }
-.home-schedule-dot[data-category="training"] { background: #7C3AED; }
-.home-schedule-dot[data-category="holiday"] { background: #DC2626; }
-.home-schedule-dot[data-category="event"] { background: #2563EB; }
-.home-schedule-dot[data-category="other"] { background: #6B7280; }
 
 .home-schedule-date-box {
     flex-shrink: 0;
-    width: 44px;
-    height: 44px;
-    background: var(--primary-light);
-    border-radius: 12px;
+    width: 36px;
+    height: 36px;
+    background: var(--secondary-color);
+    border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -3874,7 +3810,7 @@ input[type="date"]:focus {
 }
 
 .home-schedule-day {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     color: var(--primary-color);
     line-height: 1;
@@ -3883,7 +3819,7 @@ input[type="date"]:focus {
 .home-schedule-month {
     font-size: 11px;
     color: var(--text-secondary);
-    line-height: 1.4;
+    line-height: 1.2;
 }
 
 .home-schedule-info {
@@ -3892,28 +3828,20 @@ input[type="date"]:focus {
 }
 
 .home-schedule-title {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
     color: var(--text-primary);
-    margin: 0 0 4px;
+    margin: 0 0 2px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 1.4;
 }
 
 .home-schedule-meta {
     display: flex;
-    gap: 8px;
-    font-size: 14px;
-    color: var(--text-hint);
-}
-
-.home-schedule-chevron {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    color: var(--text-hint);
+    gap: 6px;
+    font-size: 10px;
+    color: var(--text-secondary);
 }
 
 .home-badge-new {
@@ -3934,42 +3862,20 @@ input[type="date"]:focus {
     line-height: 1;
 }
 
-/* ==================== 홈 공지 카드 (JC Pro 스타일) ==================== */
+/* ==================== 홈 공지 카드 (개선) ==================== */
 .notice-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
+    padding: 6px 10px;
     background: var(--background-color);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    margin-bottom: 8px;
+    border-radius: 8px;
+    margin-bottom: 3px;
     cursor: pointer;
     transition: var(--transition);
 }
 
-.notice-card:active {
-    background: var(--bg-secondary);
-}
-
-.notice-card .notice-pin-icon {
-    flex-shrink: 0;
-    width: 16px;
-    height: 16px;
-    color: var(--accent-color);
-}
-
-.notice-card .notice-chevron {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    color: var(--text-hint);
-    margin-left: auto;
-}
-
-.notice-card .notice-content {
-    flex: 1;
-    min-width: 0;
+.notice-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-color: var(--primary-color);
 }
 
 .notice-header {
@@ -4028,9 +3934,9 @@ input[type="date"]:focus {
 .card {
     background: var(--background-color);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 8px;
+    border-radius: var(--border-radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 10px;
     cursor: pointer;
     transition: var(--transition);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
@@ -4102,7 +4008,7 @@ input[type="date"]:focus {
 }
 
 .banner-section {
-    margin: 0 0 16px;
+    margin: 0 calc(-1 * var(--spacing-lg)) 8px;
     position: relative;
     overflow: hidden;
 }
@@ -5196,10 +5102,10 @@ input[type="date"]:focus {
 /* ==================== 홈 배너 캐러셀 (개선) ==================== */
 .banner-carousel {
     position: relative;
-    width: calc(100% - 48px);
-    height: 160px;
-    margin: 0 24px;
-    border-radius: 12px;
+    width: calc(100% - 24px);
+    height: 100px;
+    margin: 4px 12px;
+    border-radius: 10px;
     overflow: hidden;
 }
 .banner-carousel:empty { display: none; }
@@ -5218,13 +5124,13 @@ input[type="date"]:focus {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 20px 24px;
+    padding: 8px 12px;
     cursor: default;
     box-sizing: border-box;
 }
 .banner-carousel .banner-indicators {
     position: absolute;
-    bottom: 12px;
+    bottom: 6px;
     left: 0;
     right: 0;
     display: flex;
@@ -5234,53 +5140,48 @@ input[type="date"]:focus {
     padding: 0;
 }
 .banner-dot {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: rgba(255,255,255,0.4);
-    transition: all 0.25s ease;
+    transition: all 0.3s ease;
     cursor: pointer;
 }
 .banner-dot.active {
-    width: 20px;
-    border-radius: 4px;
-    background: #FFFFFF;
+    width: 18px;
+    border-radius: 3px;
+    background: var(--background-color);
 }
 .banner-slide .banner-title {
-    font-size: 20px;
+    font-size: 14px;
     font-weight: 700;
     color: #FFFFFF;
     line-height: 1.3;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    white-space: normal;
+    white-space: nowrap;
 }
 .banner-slide .banner-subtitle {
-    font-size: 14px;
+    font-size: 10px;
     font-weight: 400;
-    color: rgba(255,255,255,0.85);
-    margin-top: 4px;
+    color: rgba(255,255,255,0.8);
+    margin-top: 2px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 .banner-slide .banner-cta {
     display: inline-block;
-    margin-top: 12px;
-    padding: 6px 16px;
+    margin-top: 8px;
+    padding: 4px 12px;
     background: rgba(255,255,255,0.2);
-    border-radius: 6px;
-    font-size: 13px;
+    border-radius: 4px;
+    font-size: 12px;
     font-weight: 600;
     color: #FFFFFF;
     border: none;
     cursor: pointer;
     width: fit-content;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
 }
 
 /* ==================== N배지 (하단 탭 — 숫자 배지) ==================== */
@@ -5319,9 +5220,9 @@ input[type="date"]:focus {
 
 /* ==================== 소형 기기 반응형 ==================== */
 @media (max-width: 479px) {
-    .banner-carousel { height: 140px; }
-    .banner-slide .banner-title { font-size: 18px; }
-    .banner-slide .banner-subtitle { font-size: 13px; }
+    .banner-carousel { height: 110px; }
+    .banner-slide .banner-title { font-size: 14px; }
+    .banner-slide .banner-subtitle { font-size: 10px; }
     .empty-state-icon { width: 56px; height: 56px; }
     .toast { font-size: 13px; }
     .error-state-icon { width: 64px; height: 64px; }
@@ -5331,9 +5232,9 @@ input[type="date"]:focus {
 }
 
 @media (max-width: 359px) {
-    .banner-carousel { height: 120px; margin: 0 16px; width: calc(100% - 32px); }
-    .banner-dot { width: 6px; height: 6px; }
-    .banner-dot.active { width: 16px; }
+    .banner-carousel { height: 110px; margin: 8px 8px 0; width: calc(100% - 16px); }
+    .banner-dot { width: 5px; height: 5px; }
+    .banner-dot.active { width: 14px; }
     .empty-state-icon { width: 48px; height: 48px; }
     .empty-state { padding: 32px 16px; min-height: 160px; }
     .error-state { padding: 32px 16px; }
@@ -5538,7 +5439,7 @@ a.sns-badge:hover {
 .notification-badge-wrap svg {
     width: 24px;
     height: 24px;
-    color: var(--text-primary);
+    color: #FFFFFF;
 }
 
 /* 미읽음 배지 */

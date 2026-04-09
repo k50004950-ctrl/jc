@@ -16,14 +16,6 @@ async function loadHomeData() {
     var titleEl = document.querySelector('#home-screen .app-bar-title');
     if (titleEl) titleEl.textContent = getOrgName();
 
-    // 인사말 업데이트
-    var greetingEl = document.getElementById('home-greeting');
-    if (greetingEl) {
-        var user = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : JSON.parse(localStorage.getItem('user_info') || 'null');
-        var userName = (user && user.name) ? user.name : '회원';
-        greetingEl.innerHTML = '<h2 style="font-size:24px;font-weight:700;color:var(--text-primary);">' + userName + '님, 안녕하세요!</h2>';
-    }
-
     try {
         // 공지사항 요약 로드
         await loadNoticeSummary();
@@ -47,7 +39,7 @@ async function loadNoticeSummary() {
     if (!container) return;
 
     try {
-        container.innerHTML = '<div class="skeleton-card"><div class="skeleton-line skeleton-line--title"></div><div class="skeleton-line skeleton-line--sub"></div><div class="skeleton-line skeleton-line--meta"></div></div><div class="skeleton-card"><div class="skeleton-line skeleton-line--title"></div><div class="skeleton-line skeleton-line--sub"></div><div class="skeleton-line skeleton-line--meta"></div></div>';
+        container.innerHTML = '<div class="content-loading">공지사항 로딩 중...</div>';
 
         // 게시판 API에서 공지 카테고리 조회
         const result = await apiClient.getPosts(1, 20, 'notice');
@@ -72,15 +64,16 @@ async function loadNoticeSummary() {
                     if (showN) nBadgeCount++;
                     return `
                     <div class="notice-card" onclick="navigateTo('/posts/${post.id}')">
-                        ${post.is_pinned ? '<svg class="notice-pin-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>' : ''}
-                        <div class="notice-content">
-                            <h3 class="notice-title" style="font-size:16px;font-weight:${post.is_pinned ? '700' : '600'};color:var(--text-primary);margin:0 0 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.4;">${escapeHtml(post.title)}</h3>
-                            <div class="notice-meta" style="display:flex;gap:8px;align-items:center;font-size:14px;color:var(--text-hint);">
-                                <span class="notice-date">${formatDateWithRelative(post.created_at)}</span>
-                                ${showN ? '<span style="background:var(--error-color);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;">N</span>' : ''}
-                            </div>
+                        <div class="notice-header">
+                            ${post.is_pinned ? '<span class="badge badge-pinned">고정</span>' : ''}
+                            ${showN ? '<span class="badge badge-new">N</span>' : ''}
                         </div>
-                        <svg class="notice-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                        <h3 class="notice-title">${escapeHtml(post.title)}</h3>
+                        <div class="notice-meta">
+                            <span class="notice-date">${formatDateWithRelative(post.created_at)}</span>
+                            ${post.comments_count > 0 ? `<span class="notice-comments"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> ${post.comments_count}</span>` : ''}
+                            ${post.likes_count > 0 ? `<span class="notice-likes"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg> ${post.likes_count}</span>` : ''}
+                        </div>
                     </div>
                 `;
                 }).join('');
@@ -103,7 +96,7 @@ async function loadScheduleSummary() {
     if (!container) return;
     
     try {
-        container.innerHTML = '<div class="skeleton-card"><div class="skeleton-line skeleton-line--title"></div><div class="skeleton-line skeleton-line--sub"></div><div class="skeleton-line skeleton-line--meta"></div></div><div class="skeleton-card"><div class="skeleton-line skeleton-line--title"></div><div class="skeleton-line skeleton-line--sub"></div><div class="skeleton-line skeleton-line--meta"></div></div>';
+        container.innerHTML = '<div class="content-loading">일정 로딩 중...</div>';
         
         // API로 다가오는 일정 조회 (최대 5개)
         const result = await apiClient.getSchedules(true);
@@ -124,19 +117,19 @@ async function loadScheduleSummary() {
                     const t = dateField.split('T')[1]?.substring(0, 5);
                     if (t && t !== '00:00') timeStr = t;
                 }
-                const cat = (schedule.category || 'other').toLowerCase();
                 return `
                 <div class="home-schedule-card" onclick="navigateTo('/schedules/${schedule.id}')">
-                    <div class="home-schedule-dot" data-category="${cat}"></div>
+                    <div class="home-schedule-date-box">
+                        <div class="home-schedule-day">${day}</div>
+                        <div class="home-schedule-month">${month}</div>
+                    </div>
                     <div class="home-schedule-info">
                         <h3 class="home-schedule-title">${escapeHtml(schedule.title)}</h3>
                         <div class="home-schedule-meta">
-                            ${dateObj ? `<span>${dateObj.getMonth()+1}/${dateObj.getDate()}</span>` : ''}
                             ${timeStr ? `<span>${timeStr}</span>` : ''}
                             ${schedule.location ? `<span>${escapeHtml(schedule.location)}</span>` : ''}
                         </div>
                     </div>
-                    <svg class="home-schedule-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
                     ${(() => { const show = isNewContent(schedule.created_at) && !schedule.read_by_current_user && schedNBadgeCount < 2; if (show) schedNBadgeCount++; return show ? '<span class="home-badge-new">N</span>' : ''; })()}
                 </div>`;
             }).join('');

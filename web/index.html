@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JC - 회원관리 앱</title>
     <!-- Build: 2026-02-06 v2.1 -->
-    <link rel="stylesheet" href="styles/main.css?v=20260409c" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="styles/main.css?v=20260409c"></noscript>
+    <link rel="stylesheet" href="styles/main.css?v=20260407a" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="styles/main.css?v=20260407a"></noscript>
     <link rel="manifest" href="manifest.json">
     <meta name="description" content="영등포청년회의소 회원관리 커뮤니티 앱 — 공지, 일정, 회원 검색을 하나의 앱에서">
     <meta name="theme-color" content="#2563EB">
@@ -777,11 +777,6 @@
             </div>
             <div class="screen-content with-bottom-nav">
                 <div class="home-content">
-                    <!-- 인사말 -->
-                    <div id="home-greeting" style="padding:16px 24px 8px;">
-                        <h2 style="font-size:24px;font-weight:700;color:var(--text-primary);">안녕하세요!</h2>
-                    </div>
-
                     <!-- 배너 캐러셀 -->
                     <div class="banner-section">
                         <!-- JS에서 banner-carousel + banner-track 동적 생성 -->
@@ -790,24 +785,22 @@
                     <!-- 공지사항 요약 -->
                     <section class="content-section home-section">
                         <div class="section-header">
-                            <h2><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>공지사항</h2>
-                            <button class="view-all-btn" onclick="switchTab('posts'); setTimeout(()=>switchBoardTab('notice'),100)">더보기</button>
+                            <h2>공지사항</h2>
+                            <button class="view-all-btn" onclick="switchTab('posts'); setTimeout(()=>switchBoardTab('notice'),100)">전체 보기 →</button>
                         </div>
                         <div class="notice-list" id="notice-summary">
-                            <div class="skeleton-card"><div class="skeleton-line skeleton-line--title"></div><div class="skeleton-line skeleton-line--sub"></div><div class="skeleton-line skeleton-line--meta"></div></div>
-                            <div class="skeleton-card"><div class="skeleton-line skeleton-line--title"></div><div class="skeleton-line skeleton-line--sub"></div><div class="skeleton-line skeleton-line--meta"></div></div>
+                            <div class="content-loading">공지사항 로딩 중...</div>
                         </div>
                     </section>
 
                     <!-- 다가오는 일정 -->
                     <section class="content-section home-section">
                         <div class="section-header">
-                            <h2><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>다가오는 일정</h2>
-                            <button class="view-all-btn" data-navigate="schedules">더보기</button>
+                            <h2>다가오는 일정</h2>
+                            <button class="view-all-btn" data-navigate="schedules">전체 보기 →</button>
                         </div>
                         <div class="schedule-list" id="schedule-summary">
-                            <div class="skeleton-card"><div class="skeleton-line skeleton-line--title"></div><div class="skeleton-line skeleton-line--sub"></div><div class="skeleton-line skeleton-line--meta"></div></div>
-                            <div class="skeleton-card"><div class="skeleton-line skeleton-line--title"></div><div class="skeleton-line skeleton-line--sub"></div><div class="skeleton-line skeleton-line--meta"></div></div>
+                            <div class="content-loading">일정 로딩 중...</div>
                         </div>
                     </section>
                 </div>
@@ -1059,59 +1052,6 @@
                 </div>
                 <div class="search-overlay-results" id="search-results">
                     <div class="search-empty-hint">이름, 초성(ㄱㅁㅇ), 업종, 조직명으로 검색하세요</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 마이페이지 화면 -->
-        <div id="mypage-screen" class="screen">
-            <div class="app-bar">
-                <button class="hamburger-btn" onclick="openSideMenu()" aria-label="메뉴">
-                    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
-                <h1 class="app-bar-title">마이페이지</h1>
-                <div style="width:40px"></div>
-            </div>
-            <div class="screen-content with-bottom-nav" id="mypage-content">
-                <!-- 프로필 헤더 -->
-                <div style="display:flex;flex-direction:column;align-items:center;padding:24px 24px 16px;">
-                    <div id="mypage-avatar" style="width:96px;height:96px;border-radius:50%;background:var(--neutral-bg);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid var(--border-color);">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    </div>
-                    <h2 id="mypage-name" style="font-size:20px;font-weight:700;color:var(--text-primary);margin-top:12px;">회원</h2>
-                    <p id="mypage-role" style="font-size:14px;color:var(--text-hint);margin-top:4px;">회원</p>
-                </div>
-
-                <!-- 프로필 완성도 카드 -->
-                <div style="margin:0 24px 16px;padding:16px;background:var(--bg-secondary);border-radius:12px;border:1px solid var(--border-color);">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                        <span style="font-size:14px;font-weight:500;color:var(--text-primary);">프로필 완성도</span>
-                        <span id="mypage-completion-pct" style="font-size:16px;font-weight:600;color:var(--primary-color);">0%</span>
-                    </div>
-                    <div style="height:8px;background:var(--neutral-bg);border-radius:4px;overflow:hidden;">
-                        <div id="mypage-completion-bar" style="height:100%;background:var(--primary-color);border-radius:4px;width:0%;transition:width 0.5s ease;"></div>
-                    </div>
-                    <p id="mypage-completion-msg" style="font-size:13px;color:var(--text-hint);margin-top:8px;">프로필을 완성하면 다른 회원에게 더 잘 보입니다.</p>
-                </div>
-
-                <!-- 메뉴 카드 -->
-                <div style="margin:0 24px 16px;background:var(--bg-secondary);border-radius:12px;border:1px solid var(--border-color);overflow:hidden;">
-                    <button onclick="navigateToScreen('profile-edit')" style="display:flex;align-items:center;width:100%;padding:14px 16px;border:none;background:none;cursor:pointer;text-align:left;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-hint)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span style="flex:1;margin-left:12px;font-size:16px;color:var(--text-primary);">프로필 편집</span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-hint)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-                    </button>
-                    <div style="height:1px;background:var(--border-color);margin:0 16px;"></div>
-                    <button onclick="navigateToScreen('settings')" style="display:flex;align-items:center;width:100%;padding:14px 16px;border:none;background:none;cursor:pointer;text-align:left;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-hint)" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                        <span style="flex:1;margin-left:12px;font-size:16px;color:var(--text-primary);">설정</span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-hint)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-                    </button>
-                </div>
-
-                <!-- 로그아웃 버튼 -->
-                <div style="margin:0 24px 48px;">
-                    <button onclick="handleProfileLogout()" style="width:100%;height:48px;border:1px solid var(--border-color);border-radius:8px;background:none;color:var(--text-hint);font-size:15px;cursor:pointer;">로그아웃</button>
                 </div>
             </div>
         </div>
@@ -1906,7 +1846,6 @@
             <a class="side-menu-item" onclick="closeSideMenu();navigateToScreen('jc-roles')"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg><span>직책 업무</span></a>
             <a class="side-menu-item" onclick="closeSideMenu();navigateToScreen('jc-map')"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>JC 지도</span></a>
             <a class="side-menu-item" onclick="closeSideMenu();navigateToScreen('jc-charter')"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>정관</span></a>
-            <a class="side-menu-item" onclick="closeSideMenu();navigateToScreen('meetings')"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>회의</span></a>
             <a class="side-menu-item" onclick="closeSideMenu();navigateToScreen('meeting-records')"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>회의록</span></a>
             <a class="side-menu-item" onclick="closeSideMenu();navigateToScreen('portal')"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>포털 (타 로컬 방문)</span></a>
             <div class="side-menu-divider"></div>
@@ -1934,43 +1873,42 @@
             <span class="nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
             <span class="nav-label">회원</span>
         </button>
-        <button class="nav-item" data-tab="mypage">
-            <span class="nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-            <span class="nav-label">마이</span>
+        <button class="nav-item" data-tab="meetings">
+            <span class="nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+            <span class="nav-label">회의</span>
         </button>
     </nav>
 
     <!-- 앱 스크립트 -->
-    <script src="js/config.js?v=20260409c"></script>
-    <script src="js/api-client.js?v=20260409c"></script>
-    <script src="js/utils.js?v=20260409c"></script>
-    <script src="js/auth.js?v=20260409c"></script>
-    <script src="js/signup.js?v=20260409c"></script>
-    <script src="js/home.js?v=20260409c"></script>
-    <script src="js/card-components.js?v=20260409c"></script>
-    <script src="js/comment-component.js?v=20260409c"></script>
-    <script src="js/attendance-component.js?v=20260409c"></script>
-    <script src="js/posts.js?v=20260409c"></script>
-    <script src="js/notices.js?v=20260409c"></script>
-    <script src="js/schedules.js?v=20260409c"></script>
-    <script src="js/chosung.js?v=20260409c"></script>
-    <script src="js/members.js?v=20260409c"></script>
-    <script src="js/profile.js?v=20260409c"></script>
-    <script src="js/admin.js?v=20260409c"></script>
-    <script src="js/push.js?v=20260409c"></script>
-    <script src="js/notifications.js?v=20260409c"></script>
-    <script src="js/notification-settings.js?v=20260409c"></script>
-    <script src="js/settings.js?v=20260409c"></script>
-    <script src="js/mypage.js?v=20260409c"></script>
-    <script src="js/meetings.js?v=20260409c"></script>
-    <script src="js/portal.js?v=20260409c"></script>
-    <script src="js/admin-app.js?v=20260409c"></script>
-    <script src="js/content.js?v=20260409c"></script>
-    <script src="js/orgchart.js?v=20260409c"></script>
-    <script src="js/group-board.js?v=20260409c"></script>
-    <script src="js/clubs.js?v=20260409c"></script>
-    <script src="js/jc-map.js?v=20260409c"></script>
-    <script src="js/navigation.js?v=20260409c"></script>
-    <script src="js/app.js?v=20260409c"></script>
+    <script src="js/config.js?v=20260407a"></script>
+    <script src="js/api-client.js?v=20260407a"></script>
+    <script src="js/utils.js?v=20260407a"></script>
+    <script src="js/auth.js?v=20260407a"></script>
+    <script src="js/signup.js?v=20260407a"></script>
+    <script src="js/home.js?v=20260407a"></script>
+    <script src="js/card-components.js?v=20260407a"></script>
+    <script src="js/comment-component.js?v=20260407a"></script>
+    <script src="js/attendance-component.js?v=20260407a"></script>
+    <script src="js/posts.js?v=20260407a"></script>
+    <script src="js/notices.js?v=20260407a"></script>
+    <script src="js/schedules.js?v=20260407a"></script>
+    <script src="js/chosung.js?v=20260407a"></script>
+    <script src="js/members.js?v=20260407a"></script>
+    <script src="js/profile.js?v=20260407a"></script>
+    <script src="js/admin.js?v=20260407a"></script>
+    <script src="js/push.js?v=20260407a"></script>
+    <script src="js/notifications.js?v=20260407a"></script>
+    <script src="js/notification-settings.js?v=20260407a"></script>
+    <script src="js/settings.js?v=20260407a"></script>
+    <script src="js/meetings.js?v=20260407a"></script>
+    <script src="js/portal.js?v=20260407a"></script>
+    <script src="js/admin-app.js?v=20260407a"></script>
+    <script src="js/content.js?v=20260407a"></script>
+    <script src="js/orgchart.js?v=20260407a"></script>
+    <script src="js/group-board.js?v=20260407a"></script>
+    <script src="js/clubs.js?v=20260407a"></script>
+    <script src="js/jc-map.js?v=20260407a"></script>
+    <script src="js/navigation.js?v=20260407a"></script>
+    <script src="js/app.js?v=20260407a"></script>
 </body>
 </html>
