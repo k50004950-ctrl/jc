@@ -31,10 +31,10 @@
     --bg-secondary: #F9FAFB;
     --text-primary: #111827;
     --text-secondary: #4B5563;  /* WCAG AA: 7:1 on white */
-    --text-hint: #6B7280;      /* WCAG AA: 5.0:1 on white */
+    --text-hint: #9CA3AF;      /* JC Pro matching */
     --text-disabled: #D1D5DB;
     --text-muted: #6B7280;  /* WCAG AA: 5.0:1 on white (기존 #9CA3AF은 3.2:1 미달) */
-    --border-color: #E5E7EB;
+    --border-color: #D1D5DB;
     --border-light: #F3F4F6;
     --neutral-bg: #F3F4F6;
     --purple-bg: #F3E8FF;
@@ -226,14 +226,14 @@ html {
 
 /* ==================== 앱바 — v2.0 흰색 배경 + border ==================== */
 .app-bar {
-    height: var(--appbar-height);
+    height: 56px;
     background: var(--appbar-bg);
     color: var(--appbar-text);
-    padding: 0 12px;
+    padding: 0 16px;
     display: flex;
     align-items: center;
     gap: 8px;
-    border-bottom: 1px solid var(--appbar-border);
+    border-bottom: none;
     box-shadow: none;
     position: sticky;
     top: 0;
@@ -241,10 +241,11 @@ html {
 }
 
 .app-bar-title {
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 600;
     flex: 1;
     color: var(--text-primary);
+    line-height: 1.4;
 }
 
 .back-button,
@@ -1019,14 +1020,15 @@ input::-ms-clear {
     display: flex;
     background: var(--background-color);
     border-top: 1px solid var(--border-color);
-    padding: var(--spacing-xs) 0;
+    padding: 4px 0 0;
     padding-bottom: env(safe-area-inset-bottom, 0px);
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    min-height: 56px;
+    min-height: 64px;
     z-index: 9999;
+    box-shadow: 0 -1px 3px rgba(0,0,0,0.04);
 }
 
 .nav-item {
@@ -1036,8 +1038,8 @@ input::-ms-clear {
     align-items: center;
     justify-content: center;
     gap: 4px;
-    padding: var(--spacing-xs);
-    min-height: 48px;
+    padding: 6px 4px;
+    min-height: 56px;
     background: none;
     border: none;
     cursor: pointer;
@@ -1045,22 +1047,28 @@ input::-ms-clear {
     font-family: var(--font-family);
     transition: var(--transition);
     position: relative;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .nav-item:hover {
-    background-color: var(--background-color);
+    background-color: transparent;
 }
 
 .nav-item.active {
     color: var(--primary-color);
 }
 
+.nav-item.active .nav-icon {
+    background: rgba(37, 99, 235, 0.12);
+    border-radius: 16px;
+    padding: 4px 16px;
+}
+
 .nav-icon {
-    width: 24px;
-    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.25s ease;
 }
 
 .nav-icon svg {
@@ -4020,9 +4028,9 @@ input[type="date"]:focus {
 .card {
     background: var(--background-color);
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-lg);
-    padding: 14px 16px;
-    margin-bottom: 10px;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 8px;
     cursor: pointer;
     transition: var(--transition);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
@@ -5530,7 +5538,7 @@ a.sns-badge:hover {
 .notification-badge-wrap svg {
     width: 24px;
     height: 24px;
-    color: #FFFFFF;
+    color: var(--text-primary);
 }
 
 /* 미읽음 배지 */
